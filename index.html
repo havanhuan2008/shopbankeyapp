@@ -3,1118 +3,307 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Shophuanha.VN - Shop Key App Uy Tín</title>
+  <title>Đăng Nhập - Shophuanha.VN</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Righteous&family=Rubik:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
-    :root {
-      --primary: #1a1a2e;
-      --accent: #e94560;
-      --accent2: #0f3460;
-      --gold: #ffd700;
-      --green: #00c853;
-      --bg: #f0f2f5;
-      --white: #ffffff;
-      --radius: 16px;
-      --shadow: 0 4px 24px rgba(0,0,0,0.10);
-      --shadow-md: 0 8px 32px rgba(0,0,0,0.14);
-    }
     *{margin:0;padding:0;box-sizing:border-box;}
-    html{scroll-behavior:smooth;}
-    body{font-family:'Rubik',sans-serif;background:var(--bg);color:#222;min-height:100vh;overflow-x:hidden;}
+    body{font-family:'Rubik',sans-serif;min-height:100vh;overflow:hidden;}
+    @keyframes rainbow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+    @keyframes bgShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes particleFloat{0%{transform:translateY(0) rotate(0deg);opacity:0.6;}100%{transform:translateY(-100vh) rotate(720deg);opacity:0;}}
 
-    /* ===== RAINBOW LOGO ===== */
-    @keyframes rainbow {
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
+    .bg-wrap{
+      position:fixed;inset:0;z-index:0;
+      background:linear-gradient(135deg,#0a0a1a,#1a1a2e,#0f3460,#1a1a2e);
+      background-size:400% 400%;
+      animation:bgShift 8s ease infinite;
+      overflow:hidden;
     }
-    @keyframes logoFloat {
-      0%,100%{transform:translateY(0);}
-      50%{transform:translateY(-2px);}
+    .particle{
+      position:absolute;border-radius:50%;
+      animation:particleFloat linear infinite;
+      pointer-events:none;
     }
-    .logo-text {
-      font-family:'Righteous',cursive;
-      font-size:21px;
-      font-weight:900;
+    .page{
+      position:relative;z-index:1;min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:20px;overflow-y:auto;
+    }
+    .logo-area{text-align:center;margin-bottom:28px;animation:slideUp 0.5s ease;}
+    .logo-main{
+      font-family:'Righteous',cursive;font-size:32px;font-weight:900;
       background:linear-gradient(90deg,#ff0080,#ff6a00,#ffd700,#00c853,#2196f3,#9c27b0,#ff0080);
-      background-size:300% 300%;
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
-      animation:rainbow 3s ease infinite, logoFloat 2s ease-in-out infinite;
-      letter-spacing:0.5px;
-      text-shadow:none;
-      filter:drop-shadow(0 0 8px rgba(255,100,0,0.3));
+      background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      animation:rainbow 3s ease infinite, float 3s ease-in-out infinite;
+      letter-spacing:1px;
     }
-    .logo-dot {
-      font-family:'Righteous',cursive;
-      background:linear-gradient(90deg,#2196f3,#9c27b0);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
-    }
+    .logo-sub{color:rgba(255,255,255,0.5);font-size:13px;margin-top:6px;}
 
-    /* ===== HEADER ===== */
-    .header-wrap {
-      position:sticky;top:0;z-index:1000;
+    .card{
+      background:rgba(255,255,255,0.97);
+      border-radius:24px;width:100%;max-width:400px;
+      box-shadow:0 24px 80px rgba(0,0,0,0.4);
+      overflow:hidden;animation:slideUp 0.5s ease 0.1s both;
     }
-    .header-top {
-      background:rgba(255,255,255,0.98);
-      backdrop-filter:blur(20px);
-      -webkit-backdrop-filter:blur(20px);
-      border-bottom:1.5px solid rgba(0,0,0,0.06);
-      padding:0 16px;
-      height:56px;
-      display:flex;align-items:center;justify-content:space-between;
-      box-shadow:0 2px 16px rgba(0,0,0,0.08);
+    .card-tabs{display:flex;background:#f8f9fa;border-bottom:2px solid #eee;}
+    .tab-btn{
+      flex:1;padding:15px 10px;border:none;background:transparent;
+      font-size:15px;font-weight:700;color:#bbb;cursor:pointer;
+      font-family:'Rubik',sans-serif;transition:all 0.25s;
+      border-bottom:3px solid transparent;position:relative;
     }
-    .header-left{display:flex;align-items:center;gap:12px;}
-    .menu-btn {
-      width:40px;height:40px;
-      background:linear-gradient(135deg,#f5f5f5,#ececec);
-      border:1.5px solid #e8e8e8;
-      border-radius:12px;cursor:pointer;
-      display:flex;align-items:center;justify-content:center;
-      color:#333;font-size:18px;transition:all 0.2s;
-    }
-    .menu-btn:hover{background:linear-gradient(135deg,#e94560,#c0392b);color:#fff;border-color:#e94560;transform:scale(1.05);}
-    .header-right{display:flex;align-items:center;gap:10px;}
-    .header-user-btn {
-      width:38px;height:38px;
-      background:linear-gradient(135deg,#667eea,#764ba2);
-      border-radius:50%;border:none;cursor:pointer;
-      display:flex;align-items:center;justify-content:center;
-      color:#fff;font-size:16px;
-      transition:all 0.3s;box-shadow:0 4px 12px rgba(102,126,234,0.4);
-      text-decoration:none;
-    }
-    .header-user-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(102,126,234,0.5);}
-    .balance-chip {
-      background:linear-gradient(135deg,#1a1a2e,#0f3460);
-      color:#ffd700;padding:6px 12px;border-radius:20px;
-      font-size:12px;font-weight:700;
-      display:flex;align-items:center;gap:5px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.2);
-    }
+    .tab-btn.active{color:#e94560;border-bottom-color:#e94560;background:#fff;}
+    .card-body{padding:28px 24px;}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
 
-    /* ===== BOTTOM NAV (FLOATING) ===== */
-    .bottom-nav {
-      background:rgba(255,255,255,0.98);
-      backdrop-filter:blur(20px);
-      -webkit-backdrop-filter:blur(20px);
-      box-shadow:0 4px 24px rgba(0,0,0,0.12);
-      border-top:1.5px solid rgba(0,0,0,0.05);
+    .form-group{margin-bottom:18px;position:relative;}
+    .form-label{display:block;font-size:12px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+    .input-wrap{position:relative;}
+    .form-input{
+      width:100%;padding:13px 44px 13px 16px;
+      border:2px solid #eef0f5;border-radius:13px;
+      font-size:15px;font-family:'Rubik',sans-serif;
+      outline:none;transition:all 0.25s;color:#333;
+      background:#fafbff;
     }
-    .bottom-nav-inner {
-      display:flex;justify-content:space-around;
-      padding:6px 0 8px;
-      position:relative;
-    }
-    .nav-item {
-      display:flex;flex-direction:column;align-items:center;gap:3px;
-      cursor:pointer;color:#aaa;font-size:10px;font-weight:700;
-      padding:6px 12px;border-radius:14px;transition:all 0.25s;
-      text-decoration:none;position:relative;letter-spacing:0.3px;
-    }
-    .nav-item i{font-size:20px;transition:all 0.25s;}
-    .nav-item:hover,.nav-item.active{color:#e94560;}
-    .nav-item.active i{transform:scale(1.15);}
-    .nav-item.active::after {
-      content:'';position:absolute;bottom:-8px;left:50%;
-      transform:translateX(-50%);
-      width:28px;height:3px;
-      background:linear-gradient(90deg,#e94560,#ff6b9d);
-      border-radius:2px 2px 0 0;
-    }
-    /* CENTER DEPOSIT BUTTON */
-    .nav-deposit {
-      display:flex;flex-direction:column;align-items:center;gap:3px;
-      cursor:pointer;color:#fff;font-size:10px;font-weight:700;
-      padding:0;position:relative;
-    }
-    .nav-deposit-circle {
-      width:52px;height:52px;
-      background:linear-gradient(135deg,#e94560,#ff6b35);
-      border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      font-size:22px;color:#fff;
-      box-shadow:0 4px 20px rgba(233,69,96,0.5);
-      margin-top:-20px;
-      border:3px solid var(--bg);
-      transition:all 0.3s;
-    }
-    .nav-deposit:hover .nav-deposit-circle{transform:scale(1.12) rotate(8deg);box-shadow:0 8px 28px rgba(233,69,96,0.6);}
-    .nav-deposit span{color:#e94560;font-weight:700;font-size:10px;}
+    .form-input:focus{border-color:#e94560;background:#fff;box-shadow:0 0 0 3px rgba(233,69,96,0.08);}
+    .input-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#ccc;font-size:16px;cursor:pointer;transition:color 0.2s;}
+    .input-icon:hover{color:#e94560;}
 
-    /* ===== DROPDOWN ===== */
-    .header-dropdown-wrap{position:relative;}
-    .nav-dropdown-panel {
-      position:fixed;
-      top:56px;left:0;right:0;
-      background:rgba(255,255,255,0.98);
-      backdrop-filter:blur(20px);
-      box-shadow:0 8px 32px rgba(0,0,0,0.15);
-      padding:16px;z-index:998;
-      transform:translateY(-10px);opacity:0;visibility:hidden;
-      transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+    .btn-main{
+      width:100%;padding:14px;
+      background:linear-gradient(135deg,#e94560,#c0392b);
+      color:#fff;border:none;border-radius:14px;
+      font-size:16px;font-weight:700;cursor:pointer;
+      font-family:'Rubik',sans-serif;margin-top:4px;
+      transition:all 0.25s;
+      box-shadow:0 6px 20px rgba(233,69,96,0.35);
     }
-    .nav-dropdown-panel.show{transform:translateY(0);opacity:1;visibility:visible;}
-    .dropdown-header {
-      font-size:12px;font-weight:800;color:#999;
-      text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;
+    .btn-main:hover{opacity:0.92;transform:translateY(-1px);box-shadow:0 8px 24px rgba(233,69,96,0.45);}
+    .btn-main:active{transform:translateY(0);}
+
+    .err-msg{
+      display:none;align-items:center;gap:8px;
+      background:#ffebee;border:1.5px solid #ffcdd2;
+      border-radius:12px;padding:11px 14px;
+      font-size:13px;color:#c62828;margin-top:10px;
+    }
+    .ok-msg{
+      display:none;align-items:center;gap:8px;
+      background:#e8f5e9;border:1.5px solid #c8e6c9;
+      border-radius:12px;padding:11px 14px;
+      font-size:13px;color:#1b5e20;margin-top:10px;
+    }
+    .form-footer{text-align:center;margin-top:16px;font-size:13px;color:#aaa;}
+    .form-footer a{color:#e94560;text-decoration:none;font-weight:700;}
+    .back-link{
       display:flex;align-items:center;gap:8px;
+      color:rgba(255,255,255,0.5);text-decoration:none;
+      font-size:13px;margin-top:20px;transition:color 0.2s;
+      animation:slideUp 0.5s ease 0.2s both;
     }
-    .dropdown-header::after{content:'';flex:1;height:1.5px;background:linear-gradient(90deg,#e94560,transparent);}
-    .dropdown-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .dropdown-card {
-      display:flex;align-items:center;gap:12px;
-      padding:12px;border-radius:14px;
-      background:#f8f9ff;border:1.5px solid #eef0f8;
-      cursor:pointer;transition:all 0.2s;text-decoration:none;color:#333;
-    }
-    .dropdown-card:hover{border-color:#e94560;background:#fff5f7;transform:translateY(-1px);}
-    .dropdown-card-icon {
-      width:40px;height:40px;border-radius:12px;
-      display:flex;align-items:center;justify-content:center;
-      color:#fff;font-size:18px;flex-shrink:0;
-    }
-    .dropdown-card-name{font-size:13px;font-weight:700;color:#333;}
-    .dropdown-card-desc{font-size:11px;color:#aaa;margin-top:2px;}
-    .cat-grid-dropdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-    .cat-chip {
-      display:flex;flex-direction:column;align-items:center;gap:5px;
-      padding:10px 6px;border-radius:12px;border:1.5px solid #eee;
-      cursor:pointer;transition:all 0.2s;background:#fff;
-    }
-    .cat-chip:hover{border-color:#e94560;background:#fff5f7;}
-    .cat-chip-img{width:36px;height:36px;border-radius:50%;object-fit:cover;font-size:20px;display:flex;align-items:center;justify-content:center;}
-    .cat-chip-name{font-size:10px;font-weight:700;color:#555;text-align:center;}
-
-    /* ===== SIDE MENU ===== */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1998;opacity:0;visibility:hidden;transition:all 0.3s;backdrop-filter:blur(4px);}
-    .overlay.show{opacity:1;visibility:visible;}
-    .side-menu {
-      position:fixed;top:0;left:-310px;width:290px;height:100%;
-      background:#fff;z-index:1999;
-      transition:left 0.35s cubic-bezier(0.4,0,0.2,1);
-      overflow-y:auto;box-shadow:4px 0 40px rgba(0,0,0,0.2);
-    }
-    .side-menu.open{left:0;}
-    .side-menu-header {
-      background:linear-gradient(135deg,#0a0a1a 0%,#1a1a2e 60%,#0f3460 100%);
-      padding:24px 16px 20px;
-      display:flex;align-items:center;justify-content:space-between;
-      position:relative;overflow:hidden;
-    }
-    .side-menu-header::before{
-      content:'';position:absolute;right:-30px;top:-30px;
-      width:120px;height:120px;border-radius:50%;
-      background:rgba(233,69,96,0.15);
-    }
-    .side-menu-logo-wrap{display:flex;flex-direction:column;gap:4px;}
-    .side-menu-logo {
-      font-family:'Righteous',cursive;font-size:20px;font-weight:900;
-      background:linear-gradient(90deg,#ff0080,#ff6a00,#ffd700,#00c853,#2196f3,#9c27b0);
-      background-size:300%;-webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;background-clip:text;
-      animation:rainbow 3s ease infinite;
-    }
-    .side-menu-sub{color:rgba(255,255,255,0.5);font-size:11px;}
-    .close-side{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;position:relative;z-index:1;}
-    .close-side:hover{background:rgba(233,69,96,0.4);}
-    .side-user-card {
-      margin:14px;border-radius:14px;padding:14px;
-      background:linear-gradient(135deg,#f8f9ff,#f0f2ff);
-      border:1.5px solid #eef0ff;cursor:pointer;
-      display:flex;align-items:center;gap:12px;
-      transition:all 0.2s;
-    }
-    .side-user-card:hover{border-color:#667eea;transform:translateY(-1px);}
-    .side-user-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;box-shadow:0 4px 12px rgba(102,126,234,0.4);}
-    .side-user-name{font-size:15px;font-weight:800;color:#222;}
-    .side-user-balance{font-size:12px;color:#888;margin-top:2px;}
-    .side-section-label{font-size:10px;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:1.5px;padding:4px 14px 8px;margin-top:6px;}
-    .side-item {
-      display:flex;align-items:center;gap:12px;
-      padding:11px 14px;cursor:pointer;transition:all 0.2s;
-      color:#333;text-decoration:none;border-radius:12px;margin:2px 8px;
-    }
-    .side-item:hover{background:#f5f5ff;color:#e94560;}
-    .side-item-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;flex-shrink:0;}
-    .side-item-name{font-weight:600;font-size:14px;}
-    .side-item-arrow{margin-left:auto;color:#ddd;font-size:12px;transition:transform 0.2s;}
-    .side-sub{display:none;flex-direction:column;padding:0 8px 4px 20px;}
-    .side-sub.open{display:flex;}
-    .side-sub-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;cursor:pointer;color:#666;font-size:13px;transition:all 0.2s;text-decoration:none;margin:1px 0;}
-    .side-sub-item:hover{background:#f5f5f5;color:#e94560;}
-    .side-sub-item i{width:18px;text-align:center;font-size:13px;}
-    .side-divider{height:1px;background:linear-gradient(90deg,transparent,#eee,transparent);margin:8px 0;}
-    .side-arrow-icon{margin-left:auto;color:#ddd;font-size:12px;transition:transform 0.2s;}
-    .side-arrow-icon.rotated{transform:rotate(180deg);}
-
-    /* ===== MAIN CONTENT ===== */
-    .main{padding-bottom:90px;}
-
-    /* ===== TOP RECHARGE ===== */
-    @keyframes slideInUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
-    @keyframes marquee{0%{transform:translateX(100%);}100%{transform:translateX(-100%);}}
-    @keyframes colorCycle{0%{color:#e94560;}20%{color:#ffd700;}40%{color:#00c853;}60%{color:#2196f3;}80%{color:#9c27b0;}100%{color:#e94560;}}
-    .section{padding:14px 14px 0;animation:slideInUp 0.5s ease both;}
-    .top-recharge-card {
-      background:#fff;border-radius:var(--radius);
-      overflow:hidden;box-shadow:var(--shadow);
-      border:1.5px solid #f0f0f0;
-    }
-    .top-recharge-hd {
-      background:linear-gradient(135deg,#0a0a1a,#1a1a2e);
-      padding:11px 16px;display:flex;align-items:center;gap:10px;
-    }
-    .top-recharge-hd h3{color:#fff;font-size:14px;font-weight:700;flex:1;}
-    .top-recharge-hd .crown{color:var(--gold);font-size:18px;}
-    .marquee-strip{
-      background:#0f0f1f;padding:7px 0;overflow:hidden;
-      border-bottom:1px solid rgba(255,255,255,0.05);
-    }
-    .marquee-inner{
-      display:inline-block;white-space:nowrap;
-      animation:marquee 15s linear infinite, colorCycle 3s linear infinite;
-      font-size:12px;font-weight:700;padding:0 20px;
-    }
-    .top-users-list{padding:4px 0;}
-    .top-user-row {
-      display:flex;align-items:center;padding:10px 14px;
-      border-bottom:1px dashed #f5f5f5;
-      transition:background 0.2s;
-    }
-    .top-user-row:last-child{border-bottom:none;}
-    .top-user-row:hover{background:#fafbff;}
-    .rank-circle {
-      width:30px;height:30px;border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      font-size:12px;font-weight:900;color:#fff;flex-shrink:0;
-      box-shadow:0 2px 8px rgba(0,0,0,0.2);
-    }
-    .rk1{background:linear-gradient(135deg,#ffd700,#ff8c00);}
-    .rk2{background:linear-gradient(135deg,#bdbdbd,#757575);}
-    .rk3{background:linear-gradient(135deg,#cd7f32,#8b4513);}
-    .rkn{background:linear-gradient(135deg,#667eea,#764ba2);}
-    .top-user-name{flex:1;margin:0 12px;font-weight:600;font-size:13px;color:#333;}
-    .top-user-amt{font-weight:800;color:var(--green);font-size:13px;}
-    .top-star-icon{color:var(--gold);margin-right:4px;font-size:12px;}
-
-    /* ===== BANNER ===== */
-    .banner-card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);position:relative;}
-    .banner-track{display:flex;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);}
-    .banner-slide{
-      min-width:100%;height:175px;
-      display:flex;align-items:center;justify-content:center;
-      position:relative;overflow:hidden;
-    }
-    .banner-slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-    .banner-slide-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,0.5),rgba(0,0,0,0.1));}
-    .banner-content{position:relative;z-index:2;text-align:center;color:#fff;padding:0 20px;}
-    .banner-content h2{font-size:22px;font-weight:900;margin-bottom:6px;text-shadow:0 2px 10px rgba(0,0,0,0.5);}
-    .banner-content p{font-size:13px;opacity:0.9;text-shadow:0 1px 4px rgba(0,0,0,0.4);}
-    .banner-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3;}
-    .bdot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.3s;}
-    .bdot.active{background:#fff;width:22px;border-radius:4px;}
-
-    /* ===== INFO BOX ===== */
-    .info-card {
-      background:#fff;border-radius:var(--radius);
-      border:2px solid #e8ecff;box-shadow:var(--shadow);overflow:hidden;
-    }
-    .info-card-header{
-      background:linear-gradient(135deg,#1a237e,#283593);
-      padding:11px 16px;display:flex;align-items:center;gap:10px;
-    }
-    .info-card-header h3{color:#fff;font-size:14px;font-weight:700;}
-    .info-body{padding:16px;}
-    .info-divider{
-      display:flex;align-items:center;gap:10px;margin:13px 0 10px;
-    }
-    .info-divider::before,.info-divider::after{content:'';flex:1;height:1.5px;background:linear-gradient(90deg,transparent,#1a237e,transparent);}
-    .info-divider span{font-size:11px;font-weight:800;color:#1a237e;white-space:nowrap;padding:3px 10px;background:#eef0ff;border-radius:20px;}
-    .info-p{font-size:13.5px;line-height:1.75;color:#555;}
-    .info-step{display:flex;align-items:flex-start;gap:10px;margin:8px 0;}
-    .info-step-num{min-width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#1a237e,#283593);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
-    .info-step p{font-size:13px;color:#555;line-height:1.6;}
-
-    /* ===== ONLINE USERS ===== */
-    .online-card{
-      background:#fff;border-radius:var(--radius);
-      box-shadow:var(--shadow);overflow:hidden;
-      border-top:3px solid #e94560;border:1.5px solid #f5f5f5;
-      border-top:3px solid #e94560;
-    }
-    .online-hd{
-      padding:11px 14px;border-bottom:1px solid #f5f5f5;
-      display:flex;align-items:center;gap:10px;
-    }
-    @keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.4);opacity:0.7;}}
-    .online-dot{width:10px;height:10px;border-radius:50%;background:#00c853;animation:pulse 1.5s infinite;flex-shrink:0;}
-    .online-label{font-weight:700;color:#333;font-size:14px;flex:1;}
-    .online-ticker{height:80px;overflow:hidden;position:relative;padding:0 14px;}
-    .ticker-track{display:flex;flex-direction:column;gap:6px;animation:tickUp 10s linear infinite;}
-    @keyframes tickUp{0%{transform:translateY(0);}100%{transform:translateY(-50%);}};
-    .ticker-item{display:flex;align-items:center;gap:8px;padding:4px 0;}
-    .ticker-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0;}
-    .ticker-text{font-size:12.5px;color:#555;}
-    .ticker-text b{color:#333;}
-
-    /* ===== PRODUCTS ===== */
-    .products-section{padding:14px;}
-    .sec-title{
-      font-size:17px;font-weight:800;color:#1a1a2e;
-      margin-bottom:14px;display:flex;align-items:center;gap:10px;
-    }
-    .sec-title-bar{width:4px;height:20px;background:linear-gradient(135deg,#e94560,#ff6b35);border-radius:2px;}
-    .product-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    @keyframes fadeInCard{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
-    .product-card{
-      background:#fff;border-radius:var(--radius);overflow:hidden;
-      box-shadow:0 2px 12px rgba(0,0,0,0.08);
-      border:1.5px solid #f0f0f0;cursor:pointer;
-      transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
-      animation:fadeInCard 0.5s ease both;
-      text-decoration:none;color:inherit;display:block;
-    }
-    .product-card:hover{transform:translateY(-4px);box-shadow:0 10px 32px rgba(0,0,0,0.14);border-color:#e94560;}
-    .product-img-wrap{width:100%;height:110px;overflow:hidden;position:relative;}
-    .product-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;}
-    .product-card:hover .product-img-wrap img{transform:scale(1.08);}
-    .product-img-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:42px;}
-    .product-badge{position:absolute;top:8px;right:8px;background:rgba(233,69,96,0.9);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;backdrop-filter:blur(4px);}
-    .product-body{padding:10px 11px 12px;}
-    .product-name{font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
-    .product-desc{font-size:11.5px;color:#999;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5;}
-    .product-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
-    .product-items-badge{font-size:11px;color:#e94560;font-weight:700;background:#fff5f7;padding:3px 8px;border-radius:10px;}
-    .product-arrow{color:#ccc;font-size:12px;}
-
-    /* ===== FOOTER WAVE ===== */
-    .footer-section{position:relative;margin-top:20px;padding-top:60px;background:#fff;}
-    .wave-container{position:absolute;top:-2px;left:0;right:0;overflow:hidden;line-height:0;}
-    .wave-container svg{display:block;width:100%;height:60px;}
-    .footer-content{padding:24px 20px 20px;}
-    .footer-logo{
-      font-family:'Righteous',cursive;font-size:22px;font-weight:900;
-      background:linear-gradient(90deg,#ff0080,#ff6a00,#ffd700,#00c853,#2196f3,#9c27b0);
-      background-size:300%;-webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;background-clip:text;
-      animation:rainbow 3s ease infinite;margin-bottom:8px;
-    }
-    .footer-desc{font-size:13px;color:#888;line-height:1.7;margin-bottom:16px;}
-    .footer-links-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
-    .footer-link{display:flex;align-items:center;gap:8px;font-size:13px;color:#666;text-decoration:none;padding:6px 0;transition:color 0.2s;}
-    .footer-link:hover{color:#e94560;}
-    .footer-link i{font-size:12px;color:#e94560;}
-    .footer-divider{height:1.5px;background:linear-gradient(90deg,transparent,#eee,transparent);margin:12px 0;}
-    .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-    .footer-copy{font-size:12px;color:#bbb;}
-    .footer-socials{display:flex;gap:8px;}
-    .social-btn{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;transition:all 0.2s;}
-    .social-btn:hover{transform:scale(1.15);}
-
-    /* ===== MODAL STYLES ===== */
-    .modal-wrap{position:fixed;inset:0;z-index:2000;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:all 0.3s;}
-    .modal-wrap.show{opacity:1;visibility:visible;}
-    .modal-bg{position:absolute;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);}
-    .modal-sheet{
-      position:relative;background:#fff;
-      border-radius:22px 22px 0 0;width:100%;max-width:520px;
-      max-height:88vh;overflow-y:auto;
-      transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
-    }
-    .modal-wrap.show .modal-sheet{transform:translateY(0);}
-    .modal-pill{width:38px;height:4px;background:#e0e0e0;border-radius:2px;margin:12px auto 14px;}
-    .modal-hd{padding:0 20px 14px;border-bottom:1px solid #f5f5f5;display:flex;align-items:center;justify-content:space-between;}
-    .modal-hd-title{font-size:17px;font-weight:800;color:#1a1a2e;}
-    .modal-close-btn{width:32px;height:32px;border:none;background:#f5f5f5;border-radius:50%;cursor:pointer;color:#888;font-size:16px;display:flex;align-items:center;justify-content:center;}
-    .modal-body-pad{padding:16px 20px 24px;}
-    .sub-item-card {
-      display:flex;align-items:center;gap:12px;padding:13px;
-      border:1.5px solid #f0f0f0;border-radius:14px;margin-bottom:10px;
-      cursor:pointer;transition:all 0.2s;background:#fafbfc;
-    }
-    .sub-item-card:hover{border-color:#e94560;background:#fff5f7;transform:translateY(-1px);}
-    .sub-item-img{width:52px;height:52px;border-radius:12px;object-fit:cover;flex-shrink:0;}
-    .sub-item-info{flex:1;}
-    .sub-item-name{font-size:14px;font-weight:700;color:#222;}
-    .sub-item-desc{font-size:12px;color:#999;margin-top:2px;}
-    .sub-item-price{font-size:15px;font-weight:800;color:#e94560;white-space:nowrap;}
-    .btn-buy-now {
-      padding:8px 14px;background:linear-gradient(135deg,#e94560,#c0392b);
-      color:#fff;border:none;border-radius:10px;font-size:12px;
-      font-weight:700;cursor:pointer;white-space:nowrap;
-      transition:all 0.2s;font-family:'Rubik',sans-serif;
-    }
-    .btn-buy-now:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(233,69,96,0.4);}
-
-    /* ===== CONFIRM MODAL ===== */
-    .confirm-wrap{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:all 0.3s;}
-    .confirm-wrap.show{opacity:1;visibility:visible;}
-    .confirm-bg{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);}
-    .confirm-box{
-      position:relative;background:#fff;border-radius:22px;
-      width:100%;max-width:340px;padding:28px 24px;
-      box-shadow:0 24px 60px rgba(0,0,0,0.3);
-      transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
-    }
-    .confirm-wrap.show .confirm-box{transform:scale(1);}
-    .confirm-icon-wrap{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
-    .confirm-icon-wrap i{font-size:30px;}
-    .ci-success{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);}
-    .ci-success i{color:#00c853;}
-    .ci-warning{background:linear-gradient(135deg,#fff8e1,#ffecb3);}
-    .ci-warning i{color:#ff8c00;}
-    .ci-error{background:linear-gradient(135deg,#ffebee,#ffcdd2);}
-    .ci-error i{color:#e94560;}
-    .ci-info{background:linear-gradient(135deg,#e3f2fd,#bbdefb);}
-    .ci-info i{color:#2196f3;}
-    .confirm-title{text-align:center;font-size:18px;font-weight:800;color:#222;margin-bottom:8px;}
-    .confirm-msg{text-align:center;font-size:14px;color:#777;line-height:1.6;margin-bottom:20px;}
-    .qty-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px;}
-    .qty-btn{width:38px;height:38px;border:2px solid #eee;background:#fff;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-    .qty-btn:hover{border-color:#e94560;color:#e94560;}
-    .qty-num{font-size:24px;font-weight:900;min-width:44px;text-align:center;}
-    .confirm-total-text{text-align:center;font-size:14px;color:#aaa;margin-bottom:20px;}
-    .confirm-total-text strong{font-size:20px;font-weight:900;color:#e94560;}
-    .confirm-actions{display:flex;gap:10px;}
-    .btn-cancel{flex:1;padding:13px;border:2px solid #eee;background:#fff;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;color:#888;font-family:'Rubik',sans-serif;transition:all 0.2s;}
-    .btn-cancel:hover{border-color:#ddd;background:#f8f8f8;}
-    .btn-confirm{flex:2;padding:13px;border:none;background:linear-gradient(135deg,#e94560,#c0392b);border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;color:#fff;font-family:'Rubik',sans-serif;transition:all 0.2s;box-shadow:0 4px 16px rgba(233,69,96,0.35);}
-    .btn-confirm:hover{opacity:0.92;transform:translateY(-1px);}
-
-    /* ===== TOAST ===== */
-    .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:#1a1a2e;color:#fff;padding:11px 22px;border-radius:30px;font-size:13.5px;font-weight:600;z-index:9999;transition:all 0.35s cubic-bezier(0.4,0,0.2,1);box-shadow:0 4px 20px rgba(0,0,0,0.3);opacity:0;white-space:nowrap;}
-    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-    .toast.success{background:linear-gradient(135deg,#00c853,#009624);}
-    .toast.error{background:linear-gradient(135deg,#e94560,#c0392b);}
-    .toast.warning{background:linear-gradient(135deg,#ff8c00,#e65100);}
-
-    /* ===== DEPOSIT FLOAT MODAL ===== */
-    .deposit-modal-wrap{position:fixed;inset:0;z-index:2500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:all 0.3s;}
-    .deposit-modal-wrap.show{opacity:1;visibility:visible;}
-    .deposit-bg{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);}
-    .deposit-box{
-      position:relative;background:#fff;border-radius:24px;
-      width:100%;max-width:340px;padding:28px 22px;
-      box-shadow:0 24px 60px rgba(0,0,0,0.3);
-      transform:scale(0.85) translateY(20px);
-      transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    .deposit-modal-wrap.show .deposit-box{transform:scale(1) translateY(0);}
-    .deposit-title{font-size:18px;font-weight:800;color:#222;margin-bottom:20px;text-align:center;}
-    .deposit-options{display:flex;flex-direction:column;gap:12px;}
-    .deposit-option {
-      display:flex;align-items:center;gap:14px;padding:16px;
-      border-radius:16px;border:2px solid #f0f0f0;
-      cursor:pointer;transition:all 0.25s;text-decoration:none;
-      background:linear-gradient(135deg,#fafbff,#f5f7ff);
-    }
-    .deposit-option:hover{border-color:#e94560;transform:translateY(-2px);box-shadow:0 6px 20px rgba(233,69,96,0.12);}
-    .deposit-option-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;flex-shrink:0;}
-    .deposit-option-name{font-size:15px;font-weight:700;color:#222;}
-    .deposit-option-desc{font-size:12px;color:#aaa;margin-top:3px;}
-    .deposit-close-btn{position:absolute;top:16px;right:16px;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;color:#888;font-size:16px;display:flex;align-items:center;justify-content:center;}
-
-    @media(max-width:380px){
-      .product-grid{grid-template-columns:1fr;}
-      .cat-grid-dropdown{grid-template-columns:repeat(3,1fr);}
-    }
+    .back-link:hover{color:#fff;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .spin{animation:spin 0.8s linear infinite;}
   </style>
 </head>
 <body>
+  <div class="bg-wrap" id="bgWrap"></div>
+  <div class="page">
+    <div class="logo-area">
+      <div class="logo-main">Shophuanha.VN</div>
+      <div class="logo-sub">Shop Key App Uy Tín #1 Việt Nam</div>
+    </div>
 
-<!-- ===== SIDE MENU ===== -->
-<div class="overlay" id="overlay" onclick="closeSideMenu()"></div>
-<div class="side-menu" id="sideMenu">
-  <div class="side-menu-header">
-    <div class="side-menu-logo-wrap">
-      <div class="side-menu-logo">Shophuanha.VN</div>
-      <div class="side-menu-sub">Shop Key App Uy Tín #1</div>
-    </div>
-    <button class="close-side" onclick="closeSideMenu()"><i class="fas fa-times"></i></button>
-  </div>
-  <div class="side-user-card" onclick="goToAccount()">
-    <div class="side-user-avatar"><i class="fas fa-user"></i></div>
-    <div>
-      <div class="side-user-name" id="sideUserName">Đăng nhập / Đăng ký</div>
-      <div class="side-user-balance" id="sideUserBalance">Nhấn để vào tài khoản</div>
-    </div>
-    <i class="fas fa-chevron-right" style="color:#ddd;font-size:12px;margin-left:auto;"></i>
-  </div>
-  <div class="side-section-label">Menu Chính</div>
-  <a href="web.html" class="side-item">
-    <div class="side-item-icon" style="background:linear-gradient(135deg,#e94560,#c0392b);"><i class="fas fa-home"></i></div>
-    <span class="side-item-name">Trang Chủ</span>
-  </a>
-  <div class="side-item" onclick="toggleSideSub('rechargeSub','rechargeArrow')">
-    <div class="side-item-icon" style="background:linear-gradient(135deg,#00c853,#009624);"><i class="fas fa-wallet"></i></div>
-    <span class="side-item-name">Nạp Tiền</span>
-    <i class="fas fa-chevron-down side-arrow-icon" id="rechargeArrow"></i>
-  </div>
-  <div class="side-sub" id="rechargeSub">
-    <a href="card.html" class="side-sub-item"><i class="fas fa-credit-card" style="color:#e94560;"></i> Nạp Thẻ Cào</a>
-    <a href="bank.html" class="side-sub-item"><i class="fas fa-university" style="color:#2196f3;"></i> Chuyển Khoản Ngân Hàng</a>
-  </div>
-  <div class="side-item" onclick="toggleSideSub('historySub','historyArrow')">
-    <div class="side-item-icon" style="background:linear-gradient(135deg,#ffd700,#ff8c00);"><i class="fas fa-history"></i></div>
-    <span class="side-item-name">Lịch Sử</span>
-    <i class="fas fa-chevron-down side-arrow-icon" id="historyArrow"></i>
-  </div>
-  <div class="side-sub" id="historySub">
-    <a href="history-orders.html" class="side-sub-item"><i class="fas fa-shopping-bag" style="color:#9c27b0;"></i> Lịch Sử Mua Hàng</a>
-    <a href="history-recharge.html" class="side-sub-item"><i class="fas fa-coins" style="color:#00c853;"></i> Lịch Sử Nạp Tiền</a>
-    <a href="history-activity.html" class="side-sub-item"><i class="fas fa-clock" style="color:#ff8c00;"></i> Hoạt Động Gần Đây</a>
-  </div>
-  <a href="taikhoan.html" class="side-item">
-    <div class="side-item-icon" style="background:linear-gradient(135deg,#2196f3,#0066cc);"><i class="fas fa-user-circle"></i></div>
-    <span class="side-item-name">Tài Khoản</span>
-  </a>
-  <div class="side-divider"></div>
-  <a href="index.html" class="side-item">
-    <div class="side-item-icon" style="background:linear-gradient(135deg,#9c27b0,#6a0080);"><i class="fas fa-shield-alt"></i></div>
-    <span class="side-item-name">Hà Văn Huấn</span>
-  </a>
-  <div id="sideLogoutItem" style="display:none;">
-    <div class="side-divider"></div>
-    <div class="side-item" onclick="logout()" style="color:#e94560;">
-      <div class="side-item-icon" style="background:linear-gradient(135deg,#e94560,#c0392b);"><i class="fas fa-sign-out-alt"></i></div>
-      <span class="side-item-name" style="color:#e94560;">Đăng Xuất</span>
-    </div>
-  </div>
-</div>
-
-<!-- ===== HEADER ===== -->
-<div class="header-wrap">
-  <div class="header-top">
-    <div class="header-left">
-      <button class="menu-btn" onclick="toggleSideMenu()"><i class="fas fa-bars"></i></button>
-      <span class="logo-text">Shophuanha<span class="logo-dot">.VN</span></span>
-    </div>
-    <div class="header-right">
-      <div class="balance-chip" id="balanceChip" style="display:none;">
-        <i class="fas fa-wallet" style="font-size:11px;"></i>
-        <span id="headerBalance">0đ</span>
+    <div class="card">
+      <div class="card-tabs">
+        <button class="tab-btn active" onclick="switchTab('login')"><i class="fas fa-sign-in-alt" style="margin-right:6px;"></i>Đăng Nhập</button>
+        <button class="tab-btn" onclick="switchTab('register')"><i class="fas fa-user-plus" style="margin-right:6px;"></i>Đăng Ký</button>
       </div>
-      <a href="login.html" class="header-user-btn" id="headerUserBtn"><i class="fa-solid fa-user"></i></a>
-    </div>
-  </div>
-
-  <!-- BOTTOM FLOATING NAV -->
-  <div class="bottom-nav">
-    <div class="bottom-nav-inner">
-      <a class="nav-item active" href="web.html">
-        <i class="fas fa-home"></i><span>Trang Chủ</span>
-      </a>
-      <div class="nav-item" onclick="showDropdown('catPanel',this)">
-        <i class="fas fa-th-large"></i><span>Danh Mục</span>
-      </div>
-      <div class="nav-deposit" onclick="showDepositModal()">
-        <div class="nav-deposit-circle"><i class="fas fa-plus"></i></div>
-        <span>Nạp Tiền</span>
-      </div>
-      <div class="nav-item" onclick="showDropdown('histPanel',this)">
-        <i class="fas fa-history"></i><span>Lịch Sử</span>
-      </div>
-      <a class="nav-item" href="taikhoan.html">
-        <i class="fas fa-user-circle"></i><span>Tài Khoản</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- CATEGORY DROPDOWN -->
-  <div class="nav-dropdown-panel" id="catPanel">
-    <div class="dropdown-header">Danh Mục Sản Phẩm</div>
-    <div class="cat-grid-dropdown" id="catDropdownGrid">
-      <div class="cat-chip" onclick="scrollToProducts();closeAllDropdowns();">
-        <div class="cat-chip-img">🔑</div><div class="cat-chip-name">Key App</div>
-      </div>
-      <div class="cat-chip" onclick="scrollToProducts();closeAllDropdowns();">
-        <div class="cat-chip-img">📱</div><div class="cat-chip-name">Phần Mềm</div>
-      </div>
-      <div class="cat-chip" onclick="scrollToProducts();closeAllDropdowns();">
-        <div class="cat-chip-img">🎮</div><div class="cat-chip-name">Game</div>
-      </div>
-      <div class="cat-chip" onclick="scrollToProducts();closeAllDropdowns();">
-        <div class="cat-chip-img">🎵</div><div class="cat-chip-name">Âm Nhạc</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- HISTORY DROPDOWN -->
-  <div class="nav-dropdown-panel" id="histPanel">
-    <div class="dropdown-header">Lịch Sử</div>
-    <div class="dropdown-grid">
-      <a href="history-orders.html" class="dropdown-card">
-        <div class="dropdown-card-icon" style="background:linear-gradient(135deg,#9c27b0,#6a0080);"><i class="fas fa-shopping-bag"></i></div>
-        <div><div class="dropdown-card-name">Mua Hàng</div><div class="dropdown-card-desc">Đơn hàng & key</div></div>
-      </a>
-      <a href="history-recharge.html" class="dropdown-card">
-        <div class="dropdown-card-icon" style="background:linear-gradient(135deg,#00c853,#009624);"><i class="fas fa-coins"></i></div>
-        <div><div class="dropdown-card-name">Nạp Tiền</div><div class="dropdown-card-desc">Lịch sử nạp</div></div>
-      </a>
-      <a href="history-activity.html" class="dropdown-card" style="grid-column:span 2;">
-        <div class="dropdown-card-icon" style="background:linear-gradient(135deg,#ffd700,#ff8c00);"><i class="fas fa-clock"></i></div>
-        <div><div class="dropdown-card-name">Hoạt Động Gần Đây</div><div class="dropdown-card-desc">Nhật ký tài khoản</div></div>
-      </a>
-    </div>
-  </div>
-</div>
-
-<!-- ===== DEPOSIT MODAL ===== -->
-<div class="deposit-modal-wrap" id="depositModal">
-  <div class="deposit-bg" onclick="closeDepositModal()"></div>
-  <div class="deposit-box">
-    <button class="deposit-close-btn" onclick="closeDepositModal()"><i class="fas fa-times"></i></button>
-    <div class="deposit-title">💳 Chọn Hình Thức Nạp</div>
-    <div class="deposit-options">
-      <a href="card.html" class="deposit-option">
-        <div class="deposit-option-icon" style="background:linear-gradient(135deg,#e94560,#c0392b);">🃏</div>
-        <div>
-          <div class="deposit-option-name">Nạp Thẻ Cào</div>
-          <div class="deposit-option-desc">Viettel • Mobifone • Vinaphone</div>
+      <div class="card-body">
+        <!-- LOGIN -->
+        <div class="tab-panel active" id="loginPanel">
+          <div class="form-group">
+            <label class="form-label">Email / Tên đăng nhập</label>
+            <div class="input-wrap">
+              <input type="text" class="form-input" id="loginEmail" placeholder="Nhập email hoặc username"/>
+              <i class="fas fa-envelope input-icon"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mật Khẩu</label>
+            <div class="input-wrap">
+              <input type="password" class="form-input" id="loginPwd" placeholder="Nhập mật khẩu"/>
+              <i class="fas fa-eye input-icon" id="loginPwdToggle" onclick="togglePwd('loginPwd','loginPwdToggle')"></i>
+            </div>
+          </div>
+          <div class="err-msg" id="loginErr"><i class="fas fa-exclamation-circle"></i><span></span></div>
+          <div class="ok-msg" id="loginOk"><i class="fas fa-check-circle"></i><span></span></div>
+          <button class="btn-main" id="loginBtn" onclick="doLogin()">
+            <i class="fas fa-sign-in-alt" style="margin-right:8px;" id="loginBtnIcon"></i>Đăng Nhập
+          </button>
+          <div class="form-footer">Chưa có tài khoản? <a href="#" onclick="switchTab('register')">Đăng ký ngay</a></div>
         </div>
-        <i class="fas fa-chevron-right" style="margin-left:auto;color:#ddd;"></i>
-      </a>
-      <a href="bank.html" class="deposit-option">
-        <div class="deposit-option-icon" style="background:linear-gradient(135deg,#2196f3,#0066cc);">🏦</div>
-        <div>
-          <div class="deposit-option-name">Chuyển Khoản Ngân Hàng</div>
-          <div class="deposit-option-desc">Xử lý tự động 24/7</div>
-        </div>
-        <i class="fas fa-chevron-right" style="margin-left:auto;color:#ddd;"></i>
-      </a>
-    </div>
-  </div>
-</div>
 
-<!-- ===== MAIN ===== -->
-<main class="main">
-
-  <!-- TOP RECHARGE -->
-  <div class="section" style="animation-delay:0.1s;">
-    <div class="top-recharge-card">
-      <div class="top-recharge-hd">
-        <i class="fas fa-crown crown"></i>
-        <h3>🏆 Top Nạp Tiền Tháng Này</h3>
-        <i class="fas fa-star" style="color:var(--gold);font-size:14px;"></i>
-      </div>
-      <div class="marquee-strip">
-        <span class="marquee-inner">🔥 Chào mừng đến Shophuanha.VN — Giao key tự động 24/7 ⚡ &nbsp;&nbsp;&nbsp; 💎 Ưu đãi hàng ngày cho thành viên VIP &nbsp;&nbsp;&nbsp; 🏆 Top nạp nhận quà hấp dẫn &nbsp;&nbsp;&nbsp; ✅ Hơn 10.000 khách hàng tin dùng</span>
-      </div>
-      <div class="top-users-list" id="topUsersList">
-        <div class="top-user-row">
-          <div class="rank-circle rk1">1</div>
-          <span class="top-user-name">Nguyễn Văn A***</span>
-          <i class="fas fa-star top-star-icon"></i>
-          <span class="top-user-amt">2.500.000đ</span>
-        </div>
-        <div class="top-user-row">
-          <div class="rank-circle rk2">2</div>
-          <span class="top-user-name">Trần Thị B***</span>
-          <i class="fas fa-star top-star-icon"></i>
-          <span class="top-user-amt">1.800.000đ</span>
-        </div>
-        <div class="top-user-row">
-          <div class="rank-circle rk3">3</div>
-          <span class="top-user-name">Lê Hoàng C***</span>
-          <i class="fas fa-star top-star-icon"></i>
-          <span class="top-user-amt">1.200.000đ</span>
+        <!-- REGISTER -->
+        <div class="tab-panel" id="registerPanel">
+          <div class="form-group">
+            <label class="form-label">Họ và Tên</label>
+            <div class="input-wrap">
+              <input type="text" class="form-input" id="regName" placeholder="Nhập họ và tên"/>
+              <i class="fas fa-user input-icon"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <div class="input-wrap">
+              <input type="email" class="form-input" id="regEmail" placeholder="Nhập địa chỉ email"/>
+              <i class="fas fa-envelope input-icon"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mật Khẩu</label>
+            <div class="input-wrap">
+              <input type="password" class="form-input" id="regPwd" placeholder="Tối thiểu 6 ký tự"/>
+              <i class="fas fa-eye input-icon" id="regPwdToggle" onclick="togglePwd('regPwd','regPwdToggle')"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Xác Nhận Mật Khẩu</label>
+            <div class="input-wrap">
+              <input type="password" class="form-input" id="regConfirm" placeholder="Nhập lại mật khẩu"/>
+              <i class="fas fa-lock input-icon"></i>
+            </div>
+          </div>
+          <div class="err-msg" id="regErr"><i class="fas fa-exclamation-circle"></i><span></span></div>
+          <div class="ok-msg" id="regOk"><i class="fas fa-check-circle"></i><span></span></div>
+          <button class="btn-main" id="regBtn" onclick="doRegister()">
+            <i class="fas fa-user-plus" style="margin-right:8px;"></i>Đăng Ký Ngay
+          </button>
+          <div class="form-footer">Đã có tài khoản? <a href="#" onclick="switchTab('login')">Đăng nhập</a></div>
         </div>
       </div>
     </div>
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i>Về trang chủ</a>
   </div>
 
-  <!-- BANNER -->
-  <div class="section" style="animation-delay:0.15s;">
-    <div class="banner-card">
-      <div class="banner-track" id="bannerTrack">
-        <div class="banner-slide">
-          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80" alt="banner1"/>
-          <div class="banner-slide-overlay"></div>
-          <div class="banner-content"><h2>🔑 Key App Giá Rẻ</h2><p>Mua ngay — Nhận Key tự động</p></div>
-        </div>
-        <div class="banner-slide">
-          <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80" alt="banner2"/>
-          <div class="banner-slide-overlay"></div>
-          <div class="banner-content"><h2>⚡ Giao Hàng Tức Thì</h2><p>Hệ thống tự động 24/7</p></div>
-        </div>
-        <div class="banner-slide">
-          <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80" alt="banner3"/>
-          <div class="banner-slide-overlay"></div>
-          <div class="banner-content"><h2>💎 Ưu Đãi Hôm Nay</h2><p>Giảm giá đến 50% toàn bộ</p></div>
-        </div>
-        <div class="banner-slide">
-          <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80" alt="banner4"/>
-          <div class="banner-slide-overlay"></div>
-          <div class="banner-content"><h2>🏆 Shop Uy Tín #1</h2><p>Hơn 10.000 khách hàng tin dùng</p></div>
-        </div>
-      </div>
-      <div class="banner-dots" id="bannerDots">
-        <div class="bdot active" onclick="goBanner(0)"></div>
-        <div class="bdot" onclick="goBanner(1)"></div>
-        <div class="bdot" onclick="goBanner(2)"></div>
-        <div class="bdot" onclick="goBanner(3)"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- INFO -->
-  <div class="section" style="animation-delay:0.2s;">
-    <div class="info-card">
-      <div class="info-card-header">
-        <i class="fas fa-info-circle" style="color:#90caf9;font-size:18px;"></i>
-        <h3>Giới Thiệu & Hướng Dẫn</h3>
-      </div>
-      <div class="info-body">
-        <p class="info-p"><strong>Shophuanha.VN</strong> là shop bán key ứng dụng uy tín — cung cấp key phần mềm, game, ứng dụng với giá tốt nhất. Hệ thống giao key tự động 24/7, an toàn & bảo mật.</p>
-        <div class="info-divider"><span>⚡ Cách Nạp Tiền</span></div>
-        <div class="info-step"><div class="info-step-num">1</div><p>Đăng ký tài khoản và đăng nhập vào hệ thống</p></div>
-        <div class="info-step"><div class="info-step-num">2</div><p>Vào mục <strong>Nạp Tiền</strong>, chọn hình thức: Thẻ cào hoặc Chuyển khoản</p></div>
-        <div class="info-step"><div class="info-step-num">3</div><p>Tiền được cộng tự động sau khi admin duyệt giao dịch</p></div>
-        <div class="info-divider"><span>🛒 Cách Mua Hàng</span></div>
-        <div class="info-step"><div class="info-step-num">1</div><p>Chọn sản phẩm trong danh mục, nhấn vào để xem các gói</p></div>
-        <div class="info-step"><div class="info-step-num">2</div><p>Nhấn <strong>Mua Ngay</strong>, chọn số lượng và xác nhận</p></div>
-        <div class="info-step"><div class="info-step-num">3</div><p>Key giao ngay trong <strong>Lịch Sử Mua Hàng</strong> sau khi thành công</p></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ONLINE USERS -->
-  <div class="section" style="animation-delay:0.25s;">
-    <div class="online-card">
-      <div class="online-hd">
-        <div class="online-dot"></div>
-        <span class="online-label" id="onlineCount">Đang tải...</span>
-        <i class="fas fa-users" style="color:#ddd;font-size:14px;"></i>
-      </div>
-      <div class="online-ticker">
-        <div class="ticker-track" id="tickerTrack">
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#667eea,#764ba2);">A</div><span class="ticker-text"><b>Anh Tuấn</b> vừa mua Key Netflix Premium</span></div>
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#f5576c,#f093fb);">B</div><span class="ticker-text"><b>Bảo Linh</b> vừa nạp 100.000đ vào ví</span></div>
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">C</div><span class="ticker-text"><b>Cao Minh</b> vừa mua Key Spotify Premium</span></div>
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#43e97b,#38f9d7);">D</div><span class="ticker-text"><b>Duy Phát</b> vừa nạp 500.000đ vào ví</span></div>
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#fa709a,#fee140);">E</div><span class="ticker-text"><b>Em Gái</b> vừa mua Key Adobe Photoshop</span></div>
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#667eea,#764ba2);">A</div><span class="ticker-text"><b>Anh Tuấn</b> vừa mua Key Netflix Premium</span></div>
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#f5576c,#f093fb);">B</div><span class="ticker-text"><b>Bảo Linh</b> vừa nạp 100.000đ vào ví</span></div>
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">C</div><span class="ticker-text"><b>Cao Minh</b> vừa mua Key Spotify Premium</span></div>
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#43e97b,#38f9d7);">D</div><span class="ticker-text"><b>Duy Phát</b> vừa nạp 500.000đ vào ví</span></div>
-          <div class="ticker-item"><div class="ticker-av" style="background:linear-gradient(135deg,#fa709a,#fee140);">E</div><span class="ticker-text"><b>Em Gái</b> vừa mua Key Adobe Photoshop</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PRODUCTS -->
-  <div class="products-section">
-    <div class="sec-title"><div class="sec-title-bar"></div>Danh Sách Sản Phẩm</div>
-    <div class="product-grid" id="productGrid">
-      <!-- loaded by JS -->
-    </div>
-  </div>
-
-  <!-- FOOTER WAVE -->
-  <div class="footer-section">
-    <div class="wave-container">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 60" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" style="stop-color:#e94560;stop-opacity:0.15"/>
-            <stop offset="50%" style="stop-color:#2196f3;stop-opacity:0.15"/>
-            <stop offset="100%" style="stop-color:#9c27b0;stop-opacity:0.15"/>
-          </linearGradient>
-        </defs>
-        <path d="M0,30 C150,60 350,0 600,30 C850,60 1050,0 1200,30 L1200,60 L0,60 Z" fill="url(#waveGrad)"/>
-        <path d="M0,40 C200,10 400,50 600,40 C800,30 1000,50 1200,40 L1200,60 L0,60 Z" fill="#fff" opacity="0.8"/>
-        <path d="M0,50 C300,30 700,55 1200,45 L1200,60 L0,60 Z" fill="#fff"/>
-      </svg>
-    </div>
-    <div class="footer-content">
-      <div class="footer-logo">Shophuanha.VN</div>
-      <p class="footer-desc">Shop Key App uy tín hàng đầu Việt Nam. Cung cấp key bản quyền phần mềm, game, ứng dụng với giá tốt nhất — hệ thống giao key tự động 24/7.</p>
-      <div class="footer-links-grid">
-        <a href="index.html" class="footer-link"><i class="fas fa-home"></i> Trang Chủ</a>
-        <a href="taikhoan.html" class="footer-link"><i class="fas fa-user"></i> Tài Khoản</a>
-        <a href="card.html" class="footer-link"><i class="fas fa-credit-card"></i> Nạp Thẻ</a>
-        <a href="bank.html" class="footer-link"><i class="fas fa-university"></i> Chuyển Khoản</a>
-        <a href="history-orders.html" class="footer-link"><i class="fas fa-shopping-bag"></i> Lịch Sử Mua</a>
-        <a href="admin.html" class="footer-link"><i class="fas fa-shield-alt"></i> Admin</a>
-      </div>
-      <div class="footer-divider"></div>
-      <div class="footer-bottom">
-        <div class="footer-copy">© 2025 Shophuanha.VN — Tất cả quyền được bảo lưu</div>
-        <div class="footer-socials">
-          <div class="social-btn" style="background:linear-gradient(135deg,#1877f2,#0e5dbf);" title="Facebook"><i class="fab fa-facebook-f"></i></div>
-          <div class="social-btn" style="background:linear-gradient(135deg,#25d366,#128c7e);" title="Zalo"><i class="fas fa-comment-dots"></i></div>
-          <div class="social-btn" style="background:linear-gradient(135deg,#ff0000,#cc0000);" title="YouTube"><i class="fab fa-youtube"></i></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</main>
-
-<!-- PRODUCT DETAIL MODAL (sub products) -->
-<div class="modal-wrap" id="productModal">
-  <div class="modal-bg" onclick="closeProductModal(event)"></div>
-  <div class="modal-sheet">
-    <div class="modal-pill"></div>
-    <div class="modal-hd">
-      <span class="modal-hd-title" id="modalTitle">Sản Phẩm</span>
-      <button class="modal-close-btn" onclick="closeProductModal()"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="modal-body-pad" id="modalBody"></div>
-  </div>
-</div>
-
-<!-- CONFIRM PURCHASE -->
-<div class="confirm-wrap" id="confirmWrap">
-  <div class="confirm-bg" onclick="closeConfirm()"></div>
-  <div class="confirm-box">
-    <div class="confirm-icon-wrap ci-warning" id="confirmIconWrap">
-      <i class="fas fa-shopping-cart" id="confirmIconEl"></i>
-    </div>
-    <div class="confirm-title" id="confirmTitle">Xác Nhận Mua</div>
-    <div class="confirm-msg" id="confirmMsg">Bạn có muốn mua sản phẩm này không?</div>
-    <div class="qty-row" id="qtyRow">
-      <button class="qty-btn" onclick="changeQty(-1)"><i class="fas fa-minus"></i></button>
-      <div class="qty-num" id="qtyNum">1</div>
-      <button class="qty-btn" onclick="changeQty(1)"><i class="fas fa-plus"></i></button>
-    </div>
-    <div class="confirm-total-text" id="confirmTotalText">Tổng: <strong id="confirmTotal">0đ</strong></div>
-    <div class="confirm-actions">
-      <button class="btn-cancel" onclick="closeConfirm()">Hủy</button>
-      <button class="btn-confirm" onclick="onConfirmAction()"><i class="fas fa-check" style="margin-right:6px;"></i>Xác Nhận</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-const firebaseConfig={apiKey: "AIzaSyCSC-b_f-F4WbjDaQIjrIwtvJdjawaccOk",
+  <script>
+    // Firebase
+    const firebaseConfig={apiKey: "AIzaSyCSC-b_f-F4WbjDaQIjrIwtvJdjawaccOk",
     authDomain: "aimlocksuperv2.firebaseapp.com",
     databaseURL: "https://aimlocksuperv2-default-rtdb.firebaseio.com",
     projectId: "aimlocksuperv2",
     storageBucket: "aimlocksuperv2.firebasestorage.app",
     messagingSenderId: "692606090999",
     appId: "1:692606090999:web:1444aed8ba22eea38f1df2"};
-let db;
-try{firebase.initializeApp(firebaseConfig);db=firebase.database();}catch(e){}
+    let auth,db;
+    try{firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();}catch(e){}
 
-// Demo products
-const demoProducts={
-  p1:{name:'Netflix Premium',description:'Tài khoản Netflix xem phim 4K không giới hạn',image:'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=400&q=80',emoji:'🎬',items:{i1:{name:'1 Tháng Netflix',price:45000,image:'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=200&q=80',description:'Tài khoản cá nhân 1 tháng xem không giới hạn'},i2:{name:'3 Tháng Netflix',price:120000,image:'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=200&q=80',description:'Tiết kiệm 15% so với mua lẻ từng tháng'},i3:{name:'6 Tháng Netflix',price:220000,image:'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=200&q=80',description:'Tiết kiệm 25% — phổ biến nhất'}}},
-  p2:{name:'Spotify Premium',description:'Nghe nhạc không giới hạn, tải nhạc offline',image:'https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=400&q=80',emoji:'🎵',items:{i4:{name:'1 Tháng Spotify',price:25000,image:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&q=80',description:'Nghe nhạc không giới hạn, không quảng cáo'},i5:{name:'3 Tháng Spotify',price:65000,image:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&q=80',description:'Tải nhạc offline nghe khi không có mạng'},i6:{name:'12 Tháng Spotify',price:220000,image:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&q=80',description:'Ưu đãi tốt nhất — tiết kiệm 27%'}}},
-  p3:{name:'Steam Game Keys',description:'Key game Steam chính hãng giá rẻ',image:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80',emoji:'🎮',items:{i7:{name:'GTA V Key Steam',price:150000,image:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=200&q=80',description:'Grand Theft Auto V - bản quyền chính hãng'},i8:{name:'Cyberpunk 2077',price:200000,image:'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200&q=80',description:'Trải nghiệm thế giới tương lai đầy kịch tính'},i9:{name:'Elden Ring',price:220000,image:'https://images.unsplash.com/photo-1559163499-413811fb2344?w=200&q=80',description:'Game of the Year 2022 — thử thách đỉnh cao'}}},
-  p4:{name:'Microsoft Office',description:'Office 365, 2021 bản quyền giá rẻ nhất',image:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&q=80',emoji:'🖥️',items:{i10:{name:'Office 365 Personal',price:180000,image:'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&q=80',description:'1 năm sử dụng Word, Excel, PowerPoint đầy đủ'},i11:{name:'Office 365 Family',price:280000,image:'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&q=80',description:'6 tài khoản — dùng cho cả gia đình'},i12:{name:'Office 2021 Trọn Đời',price:350000,image:'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&q=80',description:'Mua 1 lần dùng mãi mãi'}}},
-  p5:{name:'Antivirus Premium',description:'Kaspersky, ESET, Bitdefender chính hãng',image:'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&q=80',emoji:'🛡️',items:{i13:{name:'Kaspersky 1 năm',price:120000,image:'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=200&q=80',description:'Bảo vệ toàn diện 24/7, nhẹ & nhanh'},i14:{name:'ESET 1 năm',price:100000,image:'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=200&q=80',description:'Diệt virus thông minh, ít tốn tài nguyên'},i15:{name:'Bitdefender 1 năm',price:130000,image:'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=200&q=80',description:'Top 1 chống mã độc tống tiền'}}},
-  p6:{name:'Adobe Creative',description:'Photoshop, Premiere Pro, After Effects',image:'https://images.unsplash.com/photo-1609921212029-bb5a28e60960?w=400&q=80',emoji:'🎨',items:{i16:{name:'Photoshop 1 tháng',price:90000,image:'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=200&q=80',description:'Chỉnh sửa ảnh chuyên nghiệp'},i17:{name:'Premiere Pro 1 tháng',price:90000,image:'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=200&q=80',description:'Dựng phim, edit video chuyên nghiệp'},i18:{name:'Adobe All Apps 1 tháng',price:250000,image:'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=200&q=80',description:'Toàn bộ ứng dụng Adobe — giá trị nhất'}}}
-};
+    // Particles
+    const bg=document.getElementById('bgWrap');
+    for(let i=0;i<18;i++){
+      const p=document.createElement('div');
+      p.className='particle';
+      const size=Math.random()*12+4;
+      const hue=Math.floor(Math.random()*360);
+      p.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;bottom:-20px;background:hsla(${hue},70%,60%,0.4);animation-duration:${Math.random()*15+8}s;animation-delay:${Math.random()*8}s;`;
+      bg.appendChild(p);
+    }
 
-let currentUser=null,purchaseItem=null,purchaseQty=1,confirmCallback=null;
-let activeDropdown=null,bannerIdx=0;
+    function switchTab(t){
+      document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
+      document.getElementById('loginPanel').classList.toggle('active',t==='login');
+      document.getElementById('registerPanel').classList.toggle('active',t==='register');
+    }
+    function togglePwd(id,iconId){
+      const inp=document.getElementById(id);const ic=document.getElementById(iconId);
+      if(inp.type==='password'){inp.type='text';ic.className='fas fa-eye-slash input-icon';}
+      else{inp.type='password';ic.className='fas fa-eye input-icon';}
+      ic.onclick=()=>togglePwd(id,iconId);
+    }
+    function showErr(id,msg){const e=document.getElementById(id);e.querySelector('span').textContent=msg;e.style.display='flex';}
+    function hideErr(id){document.getElementById(id).style.display='none';}
+    function showOk(id,msg){const e=document.getElementById(id);e.querySelector('span').textContent=msg;e.style.display='flex';}
 
-function fmt(n){return(n||0).toLocaleString('vi-VN');}
-function maskName(n){if(!n)return'***';return n.substring(0,3)+'***';}
+    async function doLogin(){
+      hideErr('loginErr');
+      const email=document.getElementById('loginEmail').value.trim();
+      const pass=document.getElementById('loginPwd').value;
+      if(!email||!pass){showErr('loginErr','Vui lòng điền đầy đủ thông tin!');return;}
+      document.getElementById('loginBtn').innerHTML='<i class="fas fa-spinner spin" style="margin-right:8px;"></i>Đang đăng nhập...';
+      document.getElementById('loginBtn').disabled=true;
+      try{
+        if(auth){
+          const cred=await auth.signInWithEmailAndPassword(email,pass);
+          const uid=cred.user.uid;
+          const snap=await db.ref('users/'+uid).get();
+          const ud=snap.val()||{};
+          const user={uid,email:cred.user.email,name:ud.name||email.split('@')[0],balance:ud.balance||0,role:ud.role||'user'};
+          localStorage.setItem('huanha_user',JSON.stringify(user));
+          showOk('loginOk','Đăng nhập thành công! Đang chuyển trang...');
+          setTimeout(()=>window.location.href='index.html',900);return;
+        }
+      }catch(e){}
+      const users=JSON.parse(localStorage.getItem('huanha_users')||'[]');
+      const found=users.find(u=>u.email===email||u.username===email);
+      if(!found||found.password!==btoa(pass)){
+        document.getElementById('loginBtn').innerHTML='<i class="fas fa-sign-in-alt" style="margin-right:8px;"></i>Đăng Nhập';
+        document.getElementById('loginBtn').disabled=false;
+        showErr('loginErr','Email hoặc mật khẩu không đúng!');return;
+      }
+      const user={...found,password:undefined};
+      localStorage.setItem('huanha_user',JSON.stringify(user));
+      showOk('loginOk','Đăng nhập thành công! Đang chuyển trang...');
+      setTimeout(()=>window.location.href='index.html',900);
+    }
 
-// AUTH
-function checkAuth(){
-  const u=JSON.parse(localStorage.getItem('huanha_user')||'null');
-  if(u){
-    currentUser=u;
-    document.getElementById('sideUserName').textContent=u.name||u.email;
-    document.getElementById('sideUserBalance').textContent='Số dư: '+fmt(u.balance||0)+'đ';
-    document.getElementById('sideLogoutItem').style.display='block';
-    document.getElementById('balanceChip').style.display='flex';
-    document.getElementById('headerBalance').textContent=fmt(u.balance||0)+'đ';
-    const btn=document.getElementById('headerUserBtn');
-    btn.href='taikhoan.html';
-  }
-}
-function goToAccount(){closeSideMenu();window.location.href=currentUser?'taikhoan.html':'login.html';}
-function logout(){localStorage.removeItem('huanha_user');showToast('Đã đăng xuất!','success');setTimeout(()=>location.reload(),800);}
+    async function doRegister(){
+      hideErr('regErr');
+      const name=document.getElementById('regName').value.trim();
+      const email=document.getElementById('regEmail').value.trim();
+      const pass=document.getElementById('regPwd').value;
+      const conf=document.getElementById('regConfirm').value;
+      if(!name||!email||!pass||!conf){showErr('regErr','Vui lòng điền đầy đủ thông tin!');return;}
+      if(pass.length<6){showErr('regErr','Mật khẩu phải ít nhất 6 ký tự!');return;}
+      if(pass!==conf){showErr('regErr','Mật khẩu xác nhận không khớp!');return;}
+      document.getElementById('regBtn').innerHTML='<i class="fas fa-spinner spin" style="margin-right:8px;"></i>Đang đăng ký...';
+      document.getElementById('regBtn').disabled=true;
+      try{
+        if(auth){
+          const cred=await auth.createUserWithEmailAndPassword(email,pass);
+          const uid=cred.user.uid;
+          await db.ref('users/'+uid).set({name,email,balance:0,role:'user',createdAt:Date.now()});
+          const user={uid,email,name,balance:0,role:'user'};
+          localStorage.setItem('huanha_user',JSON.stringify(user));
+          showOk('regOk','Đăng ký thành công!');
+          setTimeout(()=>window.location.href='index.html',900);return;
+        }
+      }catch(e){}
+      const users=JSON.parse(localStorage.getItem('huanha_users')||'[]');
+      if(users.find(u=>u.email===email)){
+        document.getElementById('regBtn').innerHTML='<i class="fas fa-user-plus" style="margin-right:8px;"></i>Đăng Ký Ngay';
+        document.getElementById('regBtn').disabled=false;
+        showErr('regErr','Email này đã được đăng ký!');return;
+      }
+      const uid='local_'+Date.now();
+      const user={uid,name,email,password:btoa(pass),balance:0,role:'user'};
+      users.push(user);
+      localStorage.setItem('huanha_users',JSON.stringify(users));
+      localStorage.setItem('huanha_user',JSON.stringify({...user,password:undefined}));
+      showOk('regOk','Đăng ký thành công!');
+      setTimeout(()=>window.location.href='index.html',900);
+    }
 
-// SIDE MENU
-function toggleSideMenu(){document.getElementById('sideMenu').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');closeAllDropdowns();}
-function closeSideMenu(){document.getElementById('sideMenu').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
-function toggleSideSub(id,arrowId){const s=document.getElementById(id);const a=document.getElementById(arrowId);s.classList.toggle('open');a&&a.classList.toggle('rotated');}
-
-// DROPDOWNS
-function showDropdown(id,el){
-  const panel=document.getElementById(id);
-  const isOpen=panel.classList.contains('show');
-  closeAllDropdowns();
-  if(!isOpen){panel.classList.add('show');activeDropdown=id;}
-}
-function closeAllDropdowns(){
-  document.querySelectorAll('.nav-dropdown-panel').forEach(p=>p.classList.remove('show'));
-  activeDropdown=null;
-}
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.bottom-nav')&&!e.target.closest('.nav-dropdown-panel'))closeAllDropdowns();
-});
-function scrollToProducts(){document.querySelector('.products-section').scrollIntoView({behavior:'smooth'});}
-
-// DEPOSIT MODAL
-function showDepositModal(){document.getElementById('depositModal').classList.add('show');closeAllDropdowns();}
-function closeDepositModal(){document.getElementById('depositModal').classList.remove('show');}
-
-// BANNER
-function goBanner(i){
-  bannerIdx=i;
-  document.getElementById('bannerTrack').style.transform=`translateX(-${i*100}%)`;
-  document.querySelectorAll('.bdot').forEach((d,idx)=>d.classList.toggle('active',idx===i));
-}
-setInterval(()=>goBanner((bannerIdx+1)%4),3800);
-
-// PRODUCTS
-function renderProducts(products){
-  const grid=document.getElementById('productGrid');
-  const bgs=['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)','linear-gradient(135deg,#a18cd1,#fbc2eb)'];
-  const entries=Object.entries(products);
-  grid.innerHTML=entries.map(([id,p],i)=>{
-    const itemCount=Object.keys(p.items||{}).length;
-    return `<a class="product-card" href="product-detail.html?id=${id}" style="animation-delay:${0.05*i}s;">
-      <div class="product-img-wrap">
-        ${p.image?`<img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'product-img-fallback\\' style=\\'background:${bgs[i%6]};\\'>'+\\'${p.emoji||'📦'}\\'+\\'</div>\\'" />"`:`<div class="product-img-fallback" style="background:${bgs[i%6]};">${p.emoji||'📦'}</div>`}
-        <div class="product-badge">${itemCount} gói</div>
-      </div>
-      <div class="product-body">
-        <div class="product-name">${p.name}</div>
-        <div class="product-desc">${p.description||''}</div>
-        <div class="product-footer">
-          <span class="product-items-badge"><i class="fas fa-tag"></i> ${itemCount} sản phẩm</span>
-          <i class="fas fa-chevron-right product-arrow"></i>
-        </div>
-      </div>
-    </a>`;
-  }).join('');
-}
-
-function loadProducts(){
-  // Try Firebase
-  if(db){
-    db.ref('products').on('value',snap=>{
-      const data=snap.val();
-      if(data&&Object.keys(data).length>0){renderProducts(data);}
-      else{renderProducts(demoProducts);}
-    });
-  } else {
-    const stored=JSON.parse(localStorage.getItem('huanha_products')||'null');
-    renderProducts(stored&&Object.keys(stored).length>0?stored:demoProducts);
-  }
-}
-
-// ONLINE
-function updateOnline(){
-  const count=Math.floor(Math.random()*50)+15;
-  document.getElementById('onlineCount').textContent=count+' người đang trực tuyến';
-}
-updateOnline();
-setInterval(updateOnline,6000);
-
-// TOP RECHARGE from firebase
-function loadTopRecharge(){
-  if(!db)return;
-  db.ref('topRecharge').on('value',snap=>{
-    const data=snap.val();
-    if(!data)return;
-    const list=document.getElementById('topUsersList');
-    const entries=Object.values(data).sort((a,b)=>b.amount-a.amount).slice(0,3);
-    const cls=['rk1','rk2','rk3'];
-    list.innerHTML=entries.map((u,i)=>`
-      <div class="top-user-row">
-        <div class="rank-circle ${cls[i]||'rkn'}">${i+1}</div>
-        <span class="top-user-name">${maskName(u.name)}</span>
-        <i class="fas fa-star top-star-icon"></i>
-        <span class="top-user-amt">${fmt(u.amount)}đ</span>
-      </div>`).join('');
-  });
-}
-
-// TOAST
-function showToast(msg,type=''){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast show'+(type?' '+type:'');
-  setTimeout(()=>t.className='toast',2800);
-}
-
-// CONFIRM generic
-let confirmMode='purchase';
-function closeConfirm(){document.getElementById('confirmWrap').classList.remove('show');confirmCallback=null;confirmMode='purchase';}
-function onConfirmAction(){
-  if(confirmCallback){const cb=confirmCallback;confirmCallback=null;closeConfirm();cb();return;}
-  if(confirmMode==='purchase')doPurchase();
-}
-function changeQty(d){
-  purchaseQty=Math.max(1,purchaseQty+d);
-  document.getElementById('qtyNum').textContent=purchaseQty;
-  if(purchaseItem)document.getElementById('confirmTotal').textContent=fmt(purchaseItem.price*purchaseQty)+'đ';
-}
-function showAlertModal(type,title,msg,cb){
-  const icons={success:'check-circle',error:'times-circle',warning:'exclamation-circle',info:'info-circle'};
-  const w=document.getElementById('confirmWrap');
-  const iw=document.getElementById('confirmIconWrap');
-  iw.className='confirm-icon-wrap ci-'+type;
-  document.getElementById('confirmIconEl').className='fas fa-'+icons[type];
-  document.getElementById('confirmTitle').textContent=title;
-  document.getElementById('confirmMsg').textContent=msg;
-  document.getElementById('qtyRow').style.display='none';
-  document.getElementById('confirmTotalText').style.display='none';
-  document.querySelector('.btn-confirm').textContent='OK';
-  confirmCallback=cb||null;
-  confirmMode='alert';
-  w.classList.add('show');
-}
-function openPurchaseModal(item){
-  if(!currentUser){showAlertModal('info','Chưa Đăng Nhập','Vui lòng đăng nhập để mua hàng!',()=>window.location.href='login.html');return;}
-  purchaseItem=item;purchaseQty=1;
-  const w=document.getElementById('confirmWrap');
-  const iw=document.getElementById('confirmIconWrap');
-  iw.className='confirm-icon-wrap ci-warning';
-  document.getElementById('confirmIconEl').className='fas fa-shopping-cart';
-  document.getElementById('confirmTitle').textContent='Xác Nhận Mua Hàng';
-  document.getElementById('confirmMsg').textContent='Sản phẩm: '+item.name;
-  document.getElementById('qtyRow').style.display='flex';
-  document.getElementById('confirmTotalText').style.display='block';
-  document.getElementById('qtyNum').textContent=1;
-  document.getElementById('confirmTotal').textContent=fmt(item.price)+'đ';
-  document.querySelector('.btn-confirm').innerHTML='<i class="fas fa-check" style="margin-right:6px;"></i>Xác Nhận Mua';
-  confirmMode='purchase';confirmCallback=null;
-  w.classList.add('show');
-}
-function doPurchase(){
-  if(!currentUser||!purchaseItem)return;
-  const total=purchaseItem.price*purchaseQty;
-  if((currentUser.balance||0)<total){
-    showAlertModal('error','Số Dư Không Đủ',`Cần ${fmt(total)}đ để mua. Vui lòng nạp thêm tiền!`,()=>window.location.href='card.html');return;
-  }
-  currentUser.balance=(currentUser.balance||0)-total;
-  localStorage.setItem('huanha_user',JSON.stringify(currentUser));
-  document.getElementById('headerBalance').textContent=fmt(currentUser.balance)+'đ';
-  document.getElementById('sideUserBalance').textContent='Số dư: '+fmt(currentUser.balance)+'đ';
-  const orders=JSON.parse(localStorage.getItem('huanha_orders')||'[]');
-  const order={id:'ORD'+Date.now(),item:purchaseItem.name,qty:purchaseQty,total,date:new Date().toLocaleString('vi-VN'),status:'processing',key:null,userId:currentUser.uid,userName:currentUser.name||currentUser.email,createdAt:Date.now()};
-  orders.unshift(order);
-  localStorage.setItem('huanha_orders',JSON.stringify(orders));
-  if(db&&currentUser.uid){
-    db.ref('orders/'+currentUser.uid+'/'+order.id).set(order);
-    db.ref('users/'+currentUser.uid+'/balance').set(currentUser.balance);
-  }
-  showAlertModal('success','Mua Hàng Thành Công!','Key sẽ được giao trong Lịch Sử Mua Hàng sau khi xử lý!',()=>window.location.href='history-orders.html');
-}
-
-// INIT
-checkAuth();
-loadProducts();
-try{loadTopRecharge();}catch(e){}
-</script>
+    document.addEventListener('keydown',e=>{if(e.key==='Enter'){if(document.getElementById('loginPanel').classList.contains('active'))doLogin();else doRegister();}});
+    const u=JSON.parse(localStorage.getItem('huanha_user')||'null');
+    if(u)window.location.href='index.html';
+  </script>
 </body>
 </html>
