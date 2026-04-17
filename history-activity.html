@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hoạt Động Gần Đây - Shophuanha.VN</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Rubik',sans-serif;background:#f0f2f5;min-height:100vh;padding-bottom:30px;}
+    @keyframes rainbow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .header{background:rgba(255,255,255,0.98);backdrop-filter:blur(20px);padding:0 16px;height:56px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 16px rgba(0,0,0,0.08);position:sticky;top:0;z-index:100;border-bottom:1.5px solid rgba(0,0,0,0.06);}
+    .back-btn{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#f5f5f5,#ececec);border:1.5px solid #e8e8e8;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#333;font-size:17px;transition:all 0.2s;}
+    .back-btn:hover{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#fff;border-color:#ffd700;}
+    .header-logo{font-family:'Righteous',cursive;font-size:18px;background:linear-gradient(90deg,#ff0080,#ff6a00,#ffd700,#00c853,#2196f3,#9c27b0,#ff0080);background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:rainbow 3s ease infinite;}
+    .page-badge{margin-left:auto;font-size:11px;font-weight:700;color:#ff8c00;background:#fff3e0;padding:4px 10px;border-radius:20px;border:1px solid #ffe0b2;}
+    .content{padding:14px;}
+    .timeline{position:relative;padding-left:24px;}
+    .timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#e94560,#2196f3,#00c853,#ffd700);border-radius:1px;}
+    .activity-item{position:relative;margin-bottom:14px;animation:slideUp 0.4s ease both;}
+    .activity-dot{position:absolute;left:-18px;top:10px;width:14px;height:14px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+    .activity-card{background:#fff;border-radius:14px;padding:13px 14px;box-shadow:0 2px 10px rgba(0,0,0,0.07);border:1.5px solid #f5f5f5;transition:all 0.2s;}
+    .activity-card:hover{border-color:#ddd;box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+    .act-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+    .act-icon{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;flex-shrink:0;}
+    .act-title{font-size:14px;font-weight:700;color:#333;flex:1;}
+    .act-time{font-size:11px;color:#ccc;white-space:nowrap;}
+    .act-desc{font-size:13px;color:#888;line-height:1.5;}
+    .act-amount{font-size:14px;font-weight:700;margin-top:4px;}
+    .amount-pos{color:#00c853;}
+    .amount-neg{color:#e94560;}
+    .date-label{font-size:11px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:1px;padding:8px 0 6px;display:flex;align-items:center;gap:8px;}
+    .date-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#eee,transparent);}
+    .empty-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 20px;text-align:center;}
+    .empty-icon{font-size:72px;color:#e0e0e0;margin-bottom:16px;}
+    .empty-h{font-size:18px;color:#bbb;margin-bottom:8px;font-weight:700;}
+    .empty-p{font-size:13px;color:#ccc;}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
+    <span class="header-logo">Shophuanha.VN</span>
+    <span class="page-badge"><i class="fas fa-clock" style="margin-right:5px;"></i>Hoạt Động</span>
+  </div>
+  <div class="content">
+    <div id="activityList"></div>
+  </div>
+  <script>
+    const user=JSON.parse(localStorage.getItem('huanha_user')||'null');
+    const orders=JSON.parse(localStorage.getItem('huanha_orders')||'[]');
+    const recharges=JSON.parse(localStorage.getItem('huanha_recharge')||'[]');
+    function fmt(n){return(n||0).toLocaleString('vi-VN');}
+    function timeAgo(ts){if(!ts)return 'vừa xong';const d=Date.now()-ts;if(d<60000)return 'vừa xong';if(d<3600000)return Math.floor(d/60000)+' phút trước';if(d<86400000)return Math.floor(d/3600000)+' giờ trước';return Math.floor(d/86400000)+' ngày trước';}
+    const dotColors={buy:'#9c27b0',recharge:'#00c853',login:'#2196f3',logout:'#e94560',default:'#ffd700'};
+    const activities=[];
+    if(user){activities.push({type:'login',title:'Đăng Nhập Tài Khoản',desc:'Đăng nhập thành công vào hệ thống',icon:'fas fa-sign-in-alt',bg:'linear-gradient(135deg,#2196f3,#0066cc)',dot:'#2196f3',createdAt:Date.now()-60000});}
+    orders.forEach(o=>activities.push({type:'buy',title:'Mua Hàng',desc:o.item||'Sản phẩm',icon:'fas fa-shopping-bag',bg:'linear-gradient(135deg,#9c27b0,#6a0080)',dot:'#9c27b0',amount:-o.total,createdAt:o.createdAt||0}));
+    recharges.forEach(r=>activities.push({type:'recharge',title:'Nạp Tiền',desc:(r.type==='bank'?'Chuyển khoản ngân hàng':'Thẻ cào '+(r.provider||'').toUpperCase()),icon:'fas fa-plus-circle',bg:'linear-gradient(135deg,#00c853,#009624)',dot:'#00c853',amount:r.amount,createdAt:r.createdAt||0}));
+    activities.sort((a,b)=>b.createdAt-a.createdAt);
+    const list=document.getElementById('activityList');
+    if(activities.length===0){list.innerHTML=`<div class="empty-wrap"><div class="empty-icon">📋</div><div class="empty-h">Chưa Có Hoạt Động</div><div class="empty-p">Lịch sử hoạt động tài khoản sẽ hiện ở đây</div></div>`;} else {
+      let lastDate='';
+      list.innerHTML='<div class="timeline">'+activities.map((a,i)=>{
+        const d=a.createdAt?new Date(a.createdAt).toLocaleDateString('vi-VN'):'Hôm nay';
+        let dateHtml='';
+        if(d!==lastDate){lastDate=d;dateHtml=`<div class="date-label">${d}</div>`;}
+        return `${dateHtml}<div class="activity-item" style="animation-delay:${0.05*i}s;">
+          <div class="activity-dot" style="background:${a.dot||'#aaa'};"></div>
+          <div class="activity-card">
+            <div class="act-top">
+              <div class="act-icon" style="background:${a.bg};"><i class="${a.icon}"></i></div>
+              <div class="act-title">${a.title}</div>
+              <div class="act-time">${timeAgo(a.createdAt)}</div>
+            </div>
+            <div class="act-desc">${a.desc}</div>
+            ${a.amount!=null?`<div class="act-amount ${a.amount>=0?'amount-pos':'amount-neg'}">${a.amount>=0?'+':''}${fmt(Math.abs(a.amount))}đ</div>`:''}
+          </div>
+        </div>`;
+      }).join('')+'</div>';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chi Tiết Sản Phẩm - Shophuanha.VN</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Rubik',sans-serif;background:#f0f2f5;min-height:100vh;}
+    @keyframes rainbow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes slideInUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+    /* HEADER */
+    .header{
+      background:rgba(255,255,255,0.98);backdrop-filter:blur(20px);
+      padding:0 16px;height:56px;
+      display:flex;align-items:center;gap:14px;
+      box-shadow:0 2px 16px rgba(0,0,0,0.08);
+      position:sticky;top:0;z-index:100;
+      border-bottom:1.5px solid rgba(0,0,0,0.06);
+    }
+    .back-btn{
+      width:40px;height:40px;border-radius:12px;
+      background:linear-gradient(135deg,#f5f5f5,#ececec);
+      border:1.5px solid #e8e8e8;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      color:#333;font-size:17px;transition:all 0.2s;
+    }
+    .back-btn:hover{background:linear-gradient(135deg,#e94560,#c0392b);color:#fff;border-color:#e94560;}
+    .header-logo{
+      font-family:'Righteous',cursive;font-size:18px;
+      background:linear-gradient(90deg,#ff0080,#ff6a00,#ffd700,#00c853,#2196f3,#9c27b0,#ff0080);
+      background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      animation:rainbow 3s ease infinite;
+    }
+
+    /* PRODUCT HERO */
+    .product-hero{
+      position:relative;width:100%;height:230px;overflow:hidden;
+      background:linear-gradient(135deg,#1a1a2e,#0f3460);
+    }
+    .hero-img{width:100%;height:100%;object-fit:cover;}
+    .hero-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.6) 100%);
+    }
+    .hero-content{
+      position:absolute;bottom:0;left:0;right:0;padding:20px 16px;color:#fff;
+      animation:slideInUp 0.5s ease;
+    }
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(233,69,96,0.9);
+      padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;
+      margin-bottom:10px;backdrop-filter:blur(4px);
+    }
+    .hero-name{font-size:22px;font-weight:900;margin-bottom:6px;text-shadow:0 2px 8px rgba(0,0,0,0.5);}
+    .hero-desc{font-size:13px;opacity:0.85;line-height:1.5;}
+
+    /* CONTENT */
+    .content{padding:14px;}
+
+    /* SECTION */
+    .sec-label{
+      font-size:12px;font-weight:800;color:#aaa;text-transform:uppercase;
+      letter-spacing:1.5px;margin-bottom:12px;display:flex;align-items:center;gap:8px;
+    }
+    .sec-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#eee,transparent);}
+
+    /* CHILD PRODUCT CARD */
+    .sub-card{
+      background:#fff;border-radius:18px;margin-bottom:12px;
+      box-shadow:0 2px 16px rgba(0,0,0,0.08);border:1.5px solid #f0f0f0;
+      overflow:hidden;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+      animation:slideInUp 0.4s ease both;
+      cursor:pointer;
+    }
+    .sub-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.13);border-color:#e94560;}
+    .sub-card-img-wrap{width:100%;height:140px;overflow:hidden;position:relative;}
+    .sub-card-img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;}
+    .sub-card:hover .sub-card-img{transform:scale(1.06);}
+    .sub-card-img-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;}
+    .sub-card-price-tag{
+      position:absolute;top:10px;right:10px;
+      background:linear-gradient(135deg,#e94560,#c0392b);
+      color:#fff;font-size:13px;font-weight:800;
+      padding:5px 12px;border-radius:20px;
+      box-shadow:0 2px 8px rgba(233,69,96,0.4);
+    }
+    .sub-card-body{padding:14px 14px 16px;}
+    .sub-card-name{font-size:15px;font-weight:800;color:#1a1a2e;margin-bottom:5px;}
+    .sub-card-desc{font-size:13px;color:#888;line-height:1.6;margin-bottom:12px;}
+    .sub-card-footer{display:flex;align-items:center;justify-content:space-between;}
+    .sub-card-price{font-size:20px;font-weight:900;color:#e94560;}
+    .btn-buy{
+      padding:10px 20px;
+      background:linear-gradient(135deg,#e94560,#c0392b);
+      color:#fff;border:none;border-radius:12px;
+      font-size:14px;font-weight:700;cursor:pointer;
+      font-family:'Rubik',sans-serif;
+      transition:all 0.25s;
+      box-shadow:0 4px 14px rgba(233,69,96,0.35);
+      display:flex;align-items:center;gap:6px;
+    }
+    .btn-buy:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(233,69,96,0.5);}
+    .btn-buy:active{transform:scale(0.98);}
+
+    /* CONFIRM */
+    .confirm-wrap{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:all 0.3s;}
+    .confirm-wrap.show{opacity:1;visibility:visible;}
+    .confirm-bg{position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);}
+    .confirm-box{position:relative;background:#fff;border-radius:22px;width:100%;max-width:340px;padding:28px 24px;box-shadow:0 24px 60px rgba(0,0,0,0.3);transform:scale(0.85);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}
+    .confirm-wrap.show .confirm-box{transform:scale(1);}
+    .confirm-icon-wrap{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+    .ci-warning{background:linear-gradient(135deg,#fff8e1,#ffecb3);}
+    .ci-success{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);}
+    .ci-error{background:linear-gradient(135deg,#ffebee,#ffcdd2);}
+    .ci-info{background:linear-gradient(135deg,#e3f2fd,#bbdefb);}
+    .confirm-title{text-align:center;font-size:18px;font-weight:800;color:#222;margin-bottom:8px;}
+    .confirm-msg{text-align:center;font-size:14px;color:#777;line-height:1.6;margin-bottom:20px;}
+    .qty-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px;}
+    .qty-btn{width:38px;height:38px;border:2px solid #eee;background:#fff;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+    .qty-btn:hover{border-color:#e94560;color:#e94560;}
+    .qty-num{font-size:24px;font-weight:900;min-width:44px;text-align:center;}
+    .confirm-total-row{text-align:center;font-size:14px;color:#aaa;margin-bottom:20px;}
+    .confirm-total-row strong{font-size:20px;font-weight:900;color:#e94560;}
+    .confirm-actions{display:flex;gap:10px;}
+    .btn-cancel{flex:1;padding:13px;border:2px solid #eee;background:#fff;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;color:#888;font-family:'Rubik',sans-serif;}
+    .btn-confirm{flex:2;padding:13px;border:none;background:linear-gradient(135deg,#e94560,#c0392b);border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;color:#fff;font-family:'Rubik',sans-serif;box-shadow:0 4px 16px rgba(233,69,96,0.35);}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(30px);background:#1a1a2e;color:#fff;padding:11px 22px;border-radius:30px;font-size:13.5px;font-weight:600;z-index:9999;transition:all 0.35s;box-shadow:0 4px 20px rgba(0,0,0,0.3);opacity:0;white-space:nowrap;}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+    .toast.success{background:linear-gradient(135deg,#00c853,#009624);}
+    .toast.error{background:linear-gradient(135deg,#e94560,#c0392b);}
+
+    /* LOADING */
+    .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:#ccc;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .spin-icon{font-size:36px;animation:spin 1s linear infinite;margin-bottom:16px;color:#e94560;}
+
+    /* RELATED */
+    .related-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+    .related-card{
+      background:#fff;border-radius:14px;overflow:hidden;
+      border:1.5px solid #f0f0f0;cursor:pointer;transition:all 0.2s;
+      text-decoration:none;display:block;
+    }
+    .related-card:hover{border-color:#e94560;transform:translateY(-2px);}
+    .related-img{width:100%;height:70px;object-fit:cover;}
+    .related-img-fb{width:100%;height:70px;display:flex;align-items:center;justify-content:center;font-size:28px;}
+    .related-name{font-size:12px;font-weight:700;color:#333;padding:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
+  <span class="header-logo">Shophuanha.VN</span>
+</div>
+
+<div id="heroArea">
+  <div class="product-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge"><i class="fas fa-tag"></i> <span id="itemCount">0 sản phẩm</span></div>
+      <div class="hero-name" id="heroName">Đang tải...</div>
+      <div class="hero-desc" id="heroDesc"></div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="sec-label">Chọn Gói Sản Phẩm</div>
+  <div id="subList"><div class="loading"><i class="fas fa-spinner spin-icon"></i><span>Đang tải sản phẩm...</span></div></div>
+  <div style="margin-top:20px;">
+    <div class="sec-label">Sản Phẩm Khác</div>
+    <div class="related-grid" id="relatedGrid"></div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-wrap" id="confirmWrap">
+  <div class="confirm-bg" onclick="closeConfirm()"></div>
+  <div class="confirm-box">
+    <div class="confirm-icon-wrap ci-warning" id="confirmIconWrap">
+      <i class="fas fa-shopping-cart" style="color:#ff8c00;font-size:30px;" id="confirmIconEl"></i>
+    </div>
+    <div class="confirm-title" id="confirmTitle">Xác Nhận Mua Hàng</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="qty-row" id="qtyRow">
+      <button class="qty-btn" onclick="changeQty(-1)"><i class="fas fa-minus"></i></button>
+      <div class="qty-num" id="qtyNum">1</div>
+      <button class="qty-btn" onclick="changeQty(1)"><i class="fas fa-plus"></i></button>
+    </div>
+    <div class="confirm-total-row" id="confirmTotalRow">Tổng tiền: <strong id="confirmTotal">0đ</strong></div>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">Hủy</button>
+      <button class="btn-confirm" id="confirmBtn" onclick="onConfirm()"><i class="fas fa-check" style="margin-right:6px;"></i>Xác Nhận Mua</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const firebaseConfig={apiKey: "AIzaSyCSC-b_f-F4WbjDaQIjrIwtvJdjawaccOk",
+    authDomain: "aimlocksuperv2.firebaseapp.com",
+    databaseURL: "https://aimlocksuperv2-default-rtdb.firebaseio.com",
+    projectId: "aimlocksuperv2",
+    storageBucket: "aimlocksuperv2.firebasestorage.app",
+    messagingSenderId: "692606090999",
+    appId: "1:692606090999:web:1444aed8ba22eea38f1df2"};
+let db;
+try{firebase.initializeApp(firebaseConfig);db=firebase.database();}catch(e){}
+
+const demoProducts={
+  p1:{name:'Netflix Premium',description:'Tài khoản Netflix xem phim 4K không giới hạn',image:'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=800&q=80',emoji:'🎬',items:{i1:{name:'1 Tháng Netflix Premium',price:45000,image:'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&q=80',description:'Tài khoản cá nhân dùng 1 tháng, xem phim 4K không giới hạn trên mọi thiết bị.'},i2:{name:'3 Tháng Netflix Premium',price:120000,image:'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&q=80',description:'Tiết kiệm hơn 15% so với mua lẻ từng tháng. Phim mới nhất cập nhật liên tục.'},i3:{name:'6 Tháng Netflix Premium',price:220000,image:'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&q=80',description:'Phổ biến nhất — tiết kiệm 25%. Trải nghiệm không gián đoạn nửa năm.'}}},
+  p2:{name:'Spotify Premium',description:'Nghe nhạc không giới hạn, tải nhạc offline',image:'https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=800&q=80',emoji:'🎵',items:{i4:{name:'1 Tháng Spotify Premium',price:25000,image:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&q=80',description:'Nghe nhạc không giới hạn, không có quảng cáo, chất lượng cao nhất.'},i5:{name:'3 Tháng Spotify Premium',price:65000,image:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&q=80',description:'Tải nhạc offline nghe khi không có mạng, tiết kiệm 13%.'},i6:{name:'12 Tháng Spotify Premium',price:220000,image:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&q=80',description:'Ưu đãi tốt nhất — tiết kiệm 27%. Nghe nhạc cả năm với giá siêu rẻ.'}}},
+  p3:{name:'Steam Game Keys',description:'Key game Steam chính hãng giá rẻ',image:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80',emoji:'🎮',items:{i7:{name:'GTA V Steam Key',price:150000,image:'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&q=80',description:'Grand Theft Auto V bản PC Steam — thế giới mở đỉnh cao, chiến online bất tận.'},i8:{name:'Cyberpunk 2077 Key',price:200000,image:'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&q=80',description:'Nhập vai trong thành phố Night City tương lai đầy kịch tính và hành động.'},i9:{name:'Elden Ring Key',price:220000,image:'https://images.unsplash.com/photo-1559163499-413811fb2344?w=400&q=80',description:'Game of the Year 2022 — thử thách khó nhất, cảm giác chiến thắng đỉnh nhất.'}}},
+  p4:{name:'Microsoft Office',description:'Office 365 và 2021 bản quyền chính hãng',image:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80',emoji:'🖥️',items:{i10:{name:'Office 365 Personal 1 năm',price:180000,image:'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80',description:'Word, Excel, PowerPoint đầy đủ — dùng 1 thiết bị trong 1 năm.'},i11:{name:'Office 365 Family 1 năm',price:280000,image:'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80',description:'Chia sẻ cho 6 người — phù hợp gia đình và nhóm nhỏ.'},i12:{name:'Office 2021 Trọn Đời',price:350000,image:'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80',description:'Mua một lần, dùng mãi mãi — không phí hàng tháng.'}}},
+  p5:{name:'Antivirus Premium',description:'Kaspersky, ESET, Bitdefender chính hãng',image:'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&q=80',emoji:'🛡️',items:{i13:{name:'Kaspersky Total Security 1 năm',price:120000,image:'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&q=80',description:'Bảo vệ toàn diện 24/7 — diệt virus, ransomware, phishing, nhẹ & nhanh.'},i14:{name:'ESET NOD32 1 năm',price:100000,image:'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&q=80',description:'Diệt virus thông minh, ít tốn tài nguyên — lý tưởng cho máy cũ.'},i15:{name:'Bitdefender Total Security 1 năm',price:130000,image:'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&q=80',description:'Top 1 chống mã độc tống tiền — bảo vệ 5 thiết bị cùng lúc.'}}},
+  p6:{name:'Adobe Creative Cloud',description:'Photoshop, Premiere, After Effects bản quyền',image:'https://images.unsplash.com/photo-1609921212029-bb5a28e60960?w=800&q=80',emoji:'🎨',items:{i16:{name:'Photoshop CC 1 tháng',price:90000,image:'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=400&q=80',description:'Chỉnh sửa ảnh chuyên nghiệp — công cụ thiết kế đồ họa hàng đầu thế giới.'},i17:{name:'Premiere Pro CC 1 tháng',price:90000,image:'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=400&q=80',description:'Dựng phim và chỉnh sửa video chuyên nghiệp cấp độ điện ảnh.'},i18:{name:'Adobe All Apps 1 tháng',price:250000,image:'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=400&q=80',description:'Toàn bộ ứng dụng Adobe — Photoshop, Illustrator, Premiere, After Effects & hơn 20 ứng dụng khác.'}}}
+};
+
+const bgs=['linear-gradient(135deg,#667eea,#764ba2)','linear-gradient(135deg,#f093fb,#f5576c)','linear-gradient(135deg,#4facfe,#00f2fe)','linear-gradient(135deg,#43e97b,#38f9d7)','linear-gradient(135deg,#fa709a,#fee140)','linear-gradient(135deg,#a18cd1,#fbc2eb)'];
+
+const params=new URLSearchParams(window.location.search);
+const productId=params.get('id');
+let currentUser=JSON.parse(localStorage.getItem('huanha_user')||'null');
+let currentProduct=null;
+let purchaseItem=null,purchaseQty=1;
+let confirmCallback=null,confirmMode='purchase';
+let allProducts={};
+
+function fmt(n){return(n||0).toLocaleString('vi-VN');}
+
+function loadProduct(){
+  if(db){
+    db.ref('products').once('value',snap=>{
+      const data=snap.val()||{};
+      allProducts=Object.keys(data).length>0?data:demoProducts;
+      const product=allProducts[productId];
+      if(product){currentProduct=product;renderProduct(product);}
+      else{renderProduct(demoProducts[productId]||null);}
+      renderRelated();
+    });
+  } else {
+    const stored=JSON.parse(localStorage.getItem('huanha_products')||'null');
+    allProducts=stored&&Object.keys(stored).length>0?stored:demoProducts;
+    const product=allProducts[productId]||demoProducts[productId];
+    if(product){currentProduct=product;renderProduct(product);}
+    renderRelated();
+  }
+}
+
+function renderProduct(p){
+  if(!p){document.getElementById('subList').innerHTML='<div class="loading"><i class="fas fa-exclamation-circle" style="font-size:36px;color:#e94560;margin-bottom:12px;display:block;"></i><span>Không tìm thấy sản phẩm</span></div>';return;}
+  document.title=p.name+' - Shophuanha.VN';
+  document.getElementById('heroName').textContent=p.name;
+  document.getElementById('heroDesc').textContent=p.description||'';
+  const items=Object.entries(p.items||{});
+  document.getElementById('itemCount').textContent=items.length+' sản phẩm';
+  // Set hero background image
+  const hero=document.querySelector('.product-hero');
+  if(p.image){
+    const img=document.createElement('img');
+    img.src=p.image;img.className='hero-img';img.alt=p.name;
+    hero.insertBefore(img,hero.firstChild);
+  } else {
+    hero.style.background=bgs[0];
+  }
+  const list=document.getElementById('subList');
+  if(items.length===0){list.innerHTML='<div class="loading"><i class="fas fa-box-open" style="font-size:36px;color:#ddd;margin-bottom:12px;display:block;"></i><span>Chưa có sản phẩm con</span></div>';return;}
+  list.innerHTML=items.map(([id,item],i)=>`
+    <div class="sub-card" style="animation-delay:${0.07*i}s;">
+      <div class="sub-card-img-wrap">
+        ${item.image?`<img class="sub-card-img" src="${item.image}" alt="${item.name}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'sub-card-img-fallback\\' style=\\'background:${bgs[i%6]};\\'>📦</div>'">`:`<div class="sub-card-img-fallback" style="background:${bgs[i%6]};">${p.emoji||'📦'}</div>`}
+        <div class="sub-card-price-tag">${fmt(item.price)}đ</div>
+      </div>
+      <div class="sub-card-body">
+        <div class="sub-card-name">${item.name}</div>
+        <div class="sub-card-desc">${item.description||'Sản phẩm chính hãng, giao key tự động sau khi thanh toán.'}</div>
+        <div class="sub-card-footer">
+          <div class="sub-card-price">${fmt(item.price)}đ</div>
+          <button class="btn-buy" onclick="openBuy('${id}','${item.name.replace(/'/g,"\\'")}',${item.price},'${item.image||''}')">
+            <i class="fas fa-bolt"></i>Mua Ngay
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderRelated(){
+  const grid=document.getElementById('relatedGrid');
+  const others=Object.entries(allProducts).filter(([id])=>id!==productId).slice(0,4);
+  grid.innerHTML=others.map(([id,p],i)=>`
+    <a class="related-card" href="product-detail.html?id=${id}">
+      ${p.image?`<img class="related-img" src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`:`<div class="related-img-fb" style="background:${bgs[i%6]};">${p.emoji||'📦'}</div>`}
+      <div class="related-name">${p.name}</div>
+    </a>
+  `).join('');
+}
+
+function openBuy(itemId,itemName,price){
+  if(!currentUser){
+    showAlertModal('info','Chưa Đăng Nhập','Vui lòng đăng nhập để mua hàng!',()=>window.location.href='login.html');return;
+  }
+  purchaseItem={id:itemId,name:itemName,price};purchaseQty=1;
+  const w=document.getElementById('confirmWrap');
+  document.getElementById('confirmIconWrap').className='confirm-icon-wrap ci-warning';
+  document.getElementById('confirmIconEl').className='fas fa-shopping-cart';
+  document.getElementById('confirmIconEl').style.color='#ff8c00';
+  document.getElementById('confirmIconEl').style.fontSize='30px';
+  document.getElementById('confirmTitle').textContent='Xác Nhận Mua Hàng';
+  document.getElementById('confirmMsg').textContent='Sản phẩm: '+itemName;
+  document.getElementById('qtyRow').style.display='flex';
+  document.getElementById('confirmTotalRow').style.display='block';
+  document.getElementById('qtyNum').textContent=1;
+  document.getElementById('confirmTotal').textContent=fmt(price)+'đ';
+  document.getElementById('confirmBtn').innerHTML='<i class="fas fa-check" style="margin-right:6px;"></i>Xác Nhận Mua';
+  confirmMode='purchase';confirmCallback=null;
+  w.classList.add('show');
+}
+
+function changeQty(d){purchaseQty=Math.max(1,purchaseQty+d);document.getElementById('qtyNum').textContent=purchaseQty;if(purchaseItem)document.getElementById('confirmTotal').textContent=fmt(purchaseItem.price*purchaseQty)+'đ';}
+function closeConfirm(){document.getElementById('confirmWrap').classList.remove('show');confirmCallback=null;}
+function onConfirm(){
+  if(confirmCallback){const cb=confirmCallback;confirmCallback=null;closeConfirm();cb();return;}
+  if(confirmMode==='purchase')doPurchase();
+}
+function doPurchase(){
+  if(!currentUser||!purchaseItem)return;
+  const total=purchaseItem.price*purchaseQty;
+  if((currentUser.balance||0)<total){
+    showAlertModal('error','Số Dư Không Đủ',`Cần thêm ${fmt(total-(currentUser.balance||0))}đ. Vui lòng nạp tiền!`,()=>window.location.href='card.html');return;
+  }
+  currentUser.balance=(currentUser.balance||0)-total;
+  localStorage.setItem('huanha_user',JSON.stringify(currentUser));
+  const orders=JSON.parse(localStorage.getItem('huanha_orders')||'[]');
+  const order={id:'ORD'+Date.now(),item:purchaseItem.name,qty:purchaseQty,total,date:new Date().toLocaleString('vi-VN'),status:'processing',key:null,userId:currentUser.uid,userName:currentUser.name||currentUser.email,createdAt:Date.now()};
+  orders.unshift(order);
+  localStorage.setItem('huanha_orders',JSON.stringify(orders));
+  if(db&&currentUser.uid){db.ref('orders/'+currentUser.uid+'/'+order.id).set(order);db.ref('users/'+currentUser.uid+'/balance').set(currentUser.balance);}
+  showAlertModal('success','Mua Hàng Thành Công! 🎉','Key sẽ được giao trong Lịch Sử Mua Hàng!',()=>window.location.href='history-orders.html');
+}
+function showAlertModal(type,title,msg,cb){
+  const icons={success:'check-circle',error:'times-circle',warning:'exclamation-circle',info:'info-circle'};
+  const colors={success:'#00c853',error:'#e94560',warning:'#ff8c00',info:'#2196f3'};
+  document.getElementById('confirmIconWrap').className='confirm-icon-wrap ci-'+type;
+  document.getElementById('confirmIconEl').className='fas fa-'+icons[type];
+  document.getElementById('confirmIconEl').style.color=colors[type];
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').textContent=msg;
+  document.getElementById('qtyRow').style.display='none';
+  document.getElementById('confirmTotalRow').style.display='none';
+  document.getElementById('confirmBtn').textContent='OK';
+  confirmMode='alert';confirmCallback=cb||null;
+  document.getElementById('confirmWrap').classList.add('show');
+}
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>t.className='toast',2800);
+}
+
+loadProduct();
+</script>
+</body>
+</html>
